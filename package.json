@@ -1,0 +1,14 @@
+﻿{
+	"author"	: "author",
+	"name"		: "project",
+	"version"	: "0.0.1",
+
+	"devDependencies" : {
+		"grunt"					: ">= 0.4",
+		"grunt-cli"				: ">= 0.1.6",
+		"grunt-contrib-watch"	: "~0.3.1",
+		"grunt-contrib-cssmin"	: ">=0.5.0",
+		"grunt-contrib-uglify"	: ">=0.2.0",
+		"grunt-contrib-concat"	: ">=0.1.3"
+	}
+}
