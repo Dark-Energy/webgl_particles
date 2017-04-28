@@ -67,10 +67,9 @@ My_Lib.Resource_Manager.prototype.load_list = function (resource_list, on_load)
 	{
 		var texture = self.texture_loader.load(url, next, progress, error);
 	}
-	
-	function next(loaded_resource)
+
+	function step()
 	{
-		self.resources[resource_list[resource_index]] = loaded_resource;
 		resource_index++;
 		if (resource_index < resource_list.length) {
 			load_texture(resource_list[resource_index]);
@@ -80,9 +79,18 @@ My_Lib.Resource_Manager.prototype.load_list = function (resource_list, on_load)
 			}
 		}
 	}
+
+	
+	function next(loaded_resource)
+	{
+		self.resources[resource_list[resource_index]] = loaded_resource;
+		step();
+	}
+
 	function error(error) 
 	{
-		console.log("ERROR loading texture", error, self.resource_list[resource_index]);
+		console.log("ERROR loading texture", error, resource_list[resource_index]);
+		step();
 	}
 	function progress()
 	{
