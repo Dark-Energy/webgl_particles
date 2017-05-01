@@ -1,28 +1,3 @@
-/*
-Particle System Parameters:
-emitter -
-affector - 
-no_fade_color - if true - particles don't faded
-texture - texture name or THREE.texture object
-size - point size
-count - max particles count
-random_color - if false, each particles have identity color, else each particle get randomness color. false by default
-color - color of particles, if random color is not set. Must be in {r,g,b} or string hex '0xffffff'.
-material features, which shader generation depends on
-blending - THREE.normalBlending (one, one_minus_src_alpha) by default
-no_premultiplied_alpha - false by default
-no_depth_test - false by default 
-depth_write - false by default
-
-
-*/
-
-var MLIB = My_Lib;
-
-My_Lib.Particles = {};
-
-My_Lib.Particles.Classes = {};
-
 
 My_Lib.Particle_System = function (params)
 {
@@ -40,13 +15,12 @@ My_Lib.Particle_System = function (params)
 	this.params = params;
 	this.texture = params.texture;
 	this.no_fade_color = !!params.no_fade_color;
-	//FIX this - need THREE.Color or not need?
+	
 	if (!params.color) {
 		params.color  = {"r":1, "g":1, "b":1};
-	} else {
-		//params.color = new THREE.Color();
 	}
 	
+	this.dynamic_color = (params.end_color || params.random_color);
 
 	this.point_size = params.size || 1;
 	var count = params.count || 100;
@@ -92,10 +66,10 @@ My_Lib.Particle_System.prototype.create_particle_geometry = function(count)
 
 	this.geometry = {};
 	this.geometry.vertices = new THREE.BufferAttribute(vertices, 3).setDynamic(true);
-	this.geometry.colors = new THREE.BufferAttribute(colors, 3).setDynamic(true);
-	/*if (this.params.random_color) {
+	this.geometry.colors = new THREE.BufferAttribute(colors, 3)
+	if (this.dynamic_color) {
 		this.geometry.colors.setDynamic(true);
-	}*/
+	}
 	this.geometry.params = new THREE.BufferAttribute(params, 1).setDynamic(true);
 	var geom = new THREE.BufferGeometry(); 		
 	this.geometry.buffer = geom;	
@@ -141,8 +115,7 @@ var vertex_shader = [
 		'gl_PointSize = t;',
 	'}',
 	'else {',
-		'vcolor.a = 0.0;',
-		//'vcolor.rgb = vec3(0.0,0.0,0.0);',
+		//'vcolor.a = 0.0;',
 		'gl_PointSize = 0.0;',
 	'}',
 '}'
@@ -156,26 +129,25 @@ var fragment_shader = [
 	'void main() {',
 	'#ifdef PARTICLE_TEXTURE',
 		'vec4 tex = texture2D( sprite, gl_PointCoord );',
+		'vec3 fragment_color = tex.rgb;',
+		'fragment_color.rgb *= vcolor.rgb;',
+		'float alpha = tex.a;',	
 	'#else',
-		'vec4 tex = vec4(1,1,1,1);',
+		'vec3 fragment_color = vcolor.rgb;',
+		'float alpha = 1.0;',
 	'#endif',
-		'float alpha = tex.a;',
+	'#ifdef PREMULTIPLIED_ALPHA',
+		'fragment_color.rgb *= alpha;',
+	'#endif',
 	'#ifndef NO_FADE_COLOR',
-		'alpha *= vcolor.a;',
-	'#endif',
-	'#ifdef TEXTURE_ONLY_ALPHA',
-		'gl_FragColor = vec4( vcolor.rgb * tex.a, tex.a *alpha);',	
+		'float fragment_alpha = alpha * vcolor.a;',
 	'#else',
-		'gl_FragColor = vec4( vcolor.rgb * tex.rgb * tex.a, alpha);',	
+		'float fragment_alpha = alpha;',
 	'#endif',
+		'gl_FragColor = vec4(fragment_color.rgb, fragment_alpha);',
 	'}',
 ];
 
-
-My_Lib.Particle_System.prototype.set_texture = function(texture)
-{
-	
-}
 
 My_Lib.Particle_System.prototype.generate_material_name = function ()
 {
@@ -189,19 +161,67 @@ My_Lib.Particle_System.prototype.generate_material_name = function ()
 	return my_name;
 }
 
+My_Lib.Particle_System.prototype.blending_mode = 
+{
+	"additive": {
+		"blendSrc": THREE.OneFactor,
+		"blendDst": THREE.OneFactor
+	},
+	"alpha": {
+		"blendSrc": THREE.SrcAlphaFactor,
+		"blendDst": THREE.OneMinusSrcAlphaFactor
+	},
+	"one_alpha": {
+		"blendSrc": THREE.OneFactor,
+		"blendDst": THREE.OneMinusSrcAlphaFactor
+	},
+	"alpha_one": {
+		"blendSrc": THREE.SrcAlphaFactor,
+		"blendDst": THREE.OneFactor
+	}
+};
+
+
 My_Lib.Particle_System.prototype.create_particle_material = function()
 {
 	if (typeof this.texture === 'string') {
 		this.texture = My_Lib.Texture_Manager.get(this.texture);
 	}
 	
+	var blending = THREE.CustomBlending;
+	var factors = this.blending_mode["one_alpha"];
+	var str_blending = this.params["blending"];
+	if (str_blending) {
+		if (str_blending === 'no') {
+			blending = THREE.NoBlending;
+		} else {
+			if (this.blending_mode[str_blending]) {
+				factors = this.blending_mode[str_blending];
+			}
+		}
+	}
+	
+	//default
+	if (typeof this.params.pre_alpha === 'undefined'){
+		this.params.pre_alpha = true;
+	}
+	
+	if (typeof this.params.depth_test === 'undefined'){
+		this.params.depth_test = true;
+	}
+	
+	if (typeof this.params.depth_write === 'undefined'){
+		this.params.depth_write = false;
+	}
+	
 	var mat = new THREE.ShaderMaterial({
-		//name: this.generate_material_name(),
 		transparent: true,
-		depthWrite: false,
-		depthTest: true,
-		blending: THREE.NormalBlending,
-		premultipliedAlpha: true,
+		depthWrite: this.params.depth_write,
+		depthTest: this.params.depth_test,
+		premultipliedAlpha: !!this.params.pre_alpha,
+		blending: blending,
+		blendSrc: factors.blendSrc,
+		blendDst: factors.blendDst,
 		defines: {
 			"PARTICLE_TEXTURE": !!this.texture,
 			"NO_FADE_COLOR": !!this.no_fade_color,
@@ -226,7 +246,6 @@ My_Lib.Particle_System.prototype.create_particle_material = function()
 	return mat;
 }
 
-var once = true;
 
 
 My_Lib.Particle_System.prototype.emit_particles = function (dt, need_emit)
@@ -235,8 +254,8 @@ My_Lib.Particle_System.prototype.emit_particles = function (dt, need_emit)
 	var p;
 	var verts = this.geometry.vertices.array;
 	var params = this.geometry.params.array;
-	var colors = this.geometry.colors.array;
-	var dummy_color = new THREE.Color(1,1,1);
+	//var colors = this.geometry.colors.array;
+	//var dummy_color = new THREE.Color(1,1,1);
 	
 	for(var i =0; i < this.particle_data.length && need_emit > 0; i++) {
 		if (!(params[i] > 0)) {
@@ -248,9 +267,9 @@ My_Lib.Particle_System.prototype.emit_particles = function (dt, need_emit)
 			verts[i*3+2] = p.position.z;
 			params[i] = p.lifetime;
 			need_emit--;
-			colors[i*3] = this.params.color.r
-			colors[i*3+1] = this.params.color.g;
-			colors[i*3+2] = this.params.color.b;
+			//colors[i*3] = this.params.color.r
+			//colors[i*3+1] = this.params.color.g;
+			//colors[i*3+2] = this.params.color.b;
 		}
 	}
 }
@@ -288,7 +307,7 @@ My_Lib.Particle_System.prototype.update_particle_geometry = function (dt)
 	
 	this.geometry.vertices.needsUpdate = true;
 	this.geometry.params.needsUpdate = true;
-	this.geometry.colors.needsUpdate = true;
+	//this.geometry.colors.needsUpdate = true;
 }
 
 

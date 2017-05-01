@@ -1,0 +1,29 @@
+PARTICLE SYSTEM PARAMETERS
+
+count - max particles count
+
+size - point size
+
+texture - texture name or texture object. 
+
+emitter - emitter object or description
+
+affector - affector object or description
+
+color - color of particles. Must be in {r,g,b} or string hex '0xffffff'.
+
+no_fade_color - if true - particles don't faded, false by default, optional
+
+end_color - if given, particle color interpolated from 'color' to 'end_color' 
+
+random_color - if false, each particles have identity color, else each particle get randomness color. false by default
+
+
+material features
+
+blending - string parameter, optional, must be on of this:
+no
+additive - One, One (s.rgb + d.rgb)
+alpha - src_alpha, one_minus_src_alpha (s.rgb * s.a + (1 - s.a) * d.rgb)
+one_alpha - one, one_minus_src_alpha (s.rgb + (1 - s.a) * d.rgb)
+alpha_one - src_alpha, one

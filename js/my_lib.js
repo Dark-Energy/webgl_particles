@@ -22,85 +22,6 @@ My_Lib.Viewport = {};
  	}
 
 
-My_Lib.Resource_Manager = function ()
-{
-	this.resources = {};
-	this.texture_loader = new THREE.TextureLoader();
-}
-
-My_Lib.Resource_Manager.prototype.get = function (name)
-{
-	return this.resources[name];
-}
-
-My_Lib.Resource_Manager.prototype.get_async = function (name, callback)
-{
-	//already loaded?
-	var texture = this.get(name);
-	if (texture) {
-		if (callback) {
-			callback(texture);
-		}
-		return texture;
-	}
-
-	//if not load this async
-	var self = this;
-	texture = this.texture_loader.load(url, function (texture)
-	{
-		if (callback) {
-			callback(texture);
-		}
-	});
-	this.resources[name] = texture;	
-	return texture;
-}
-
-My_Lib.Resource_Manager.prototype.load_list = function (resource_list, on_load)
-{
-	var self = this;
-	
-	var resource_index = 0;
-	
-	
-	function load_texture(url) 
-	{
-		var texture = self.texture_loader.load(url, next, progress, error);
-	}
-
-	function step()
-	{
-		resource_index++;
-		if (resource_index < resource_list.length) {
-			load_texture(resource_list[resource_index]);
-		} else {
-			if (on_load) {
-				on_load();
-			}
-		}
-	}
-
-	
-	function next(loaded_resource)
-	{
-		self.resources[resource_list[resource_index]] = loaded_resource;
-		step();
-	}
-
-	function error(error) 
-	{
-		console.log("ERROR loading texture", error, resource_list[resource_index]);
-		step();
-	}
-	function progress()
-	{
-	}
-	
-	load_texture(resource_list[0]);
-}
-
-My_Lib.Texture_Manager = new My_Lib.Resource_Manager();	
-	
 My_Lib.Object_Animation = function (object, animation)
 {
 	this.object = object;
@@ -654,3 +575,5 @@ My_Lib.Get_Class = function (name)
 {
 	return My_Lib.Registered_Classes[name];
 }
+
+console.log(THREE.WebGLState);
