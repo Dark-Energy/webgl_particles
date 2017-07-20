@@ -4838,7 +4838,6 @@
 
 			if ( v.needsUpdate !== false ) {
 				// note: always updating when .needsUpdate is undefined
-
 				u.setValue( gl, v.value, renderer );
 
 			}
@@ -18648,7 +18647,8 @@
 				blendSrcAlpha = blendSrcAlpha || blendSrc;
 				blendDstAlpha = blendDstAlpha || blendDst;
 
-				if ( blendEquation !== currentBlendEquation || blendEquationAlpha !== currentBlendEquationAlpha ) {
+				//if ( blendEquation !== currentBlendEquation || blendEquationAlpha !== currentBlendEquationAlpha ) 
+                {
 
 					gl.blendEquationSeparate( paramThreeToGL( blendEquation ), paramThreeToGL( blendEquationAlpha ) );
 
@@ -18657,7 +18657,8 @@
 
 				}
 
-				if ( blendSrc !== currentBlendSrc || blendDst !== currentBlendDst || blendSrcAlpha !== currentBlendSrcAlpha || blendDstAlpha !== currentBlendDstAlpha ) {
+				//if ( blendSrc !== currentBlendSrc || blendDst !== currentBlendDst || blendSrcAlpha !== currentBlendSrcAlpha || blendDstAlpha !== currentBlendDstAlpha ) 
+                {
 
 					gl.blendFuncSeparate( paramThreeToGL( blendSrc ), paramThreeToGL( blendDst ), paramThreeToGL( blendSrcAlpha ), paramThreeToGL( blendDstAlpha ) );
 					currentBlendSrc = blendSrc;
@@ -21294,7 +21295,7 @@
 					m_uniforms.opacity.value = material.opacity;
 
 				}
-
+                
 				WebGLUniforms.upload(
 						_gl, materialProperties.uniformsList, m_uniforms, _this );
 

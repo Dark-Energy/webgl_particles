@@ -3,6 +3,14 @@
     "params": {
         "count": 300,
         "size": 3,
+		"pre_alpha": true,		
+		"blending": "one_alpha",		
+                "color": {
+					"r": 1,
+					"g": 1,
+					"b": 1
+				},
+		
         "emitter": {
             "name": "Star_Dust_Emitter",
             "params": {

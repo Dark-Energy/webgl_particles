@@ -1,4 +1,4 @@
-Point_Generators = {};
+var Point_Generators = {};
 
 
 Point_Generators.Random_Direction = function ()

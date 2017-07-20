@@ -1,0 +1,161 @@
+{
+"cone_particles": {
+    "name": "test",
+    "params": {
+        "count": 300,
+        "size": 2,
+		"pre_alpha": true,
+		"blending": "one_alpha",
+        "particle_lifetime": 1,
+                "color": {
+					"r": 1,
+					"g": 1,
+					"b": 0
+				},
+		
+        "emitter": {
+            "name": "Cone_Emitter",
+            "params": {
+                "emit_per_second": 100,
+                "lifetime": {
+                    "min": 0,
+                    "max": 1
+                },
+                "parent": "sun",
+                "origin": {
+                    "x": 5,
+                    "y": 5,
+                    "z": 0
+                },
+                "velocity": {
+                    "x": 10,
+                    "y": 10,
+                    "z": 0
+                },
+                "dispersion": {
+                    "min": 5,
+                    "max": 10,
+                    "delta": 5
+                },
+                "speed": {
+                    "min": 20,
+                    "max": 30,
+                    "delta": 10
+                }
+            }
+        },
+        "affector": {
+            "name": "Force_Affector",
+            "params": {
+				"forces": [
+					{
+						"name": "Constant_Force",
+						"force": {
+							"x": 100,
+							"y": 0,
+							"z": 0
+						}
+					}
+				]
+			}
+        },
+        "texture": "textures/particle2.png",
+        "no_fade_color": false
+    }
+},  
+
+"cone_particles2": {
+    "name": "test",
+    "params": {
+        "count": 300,
+        "size": 2,
+        "particle_lifetime": 1,
+                "color": {
+					"r": 1,
+					"g": 1,
+					"b": 0
+				},
+		
+        "emitter": {
+            "name": "Cone_Emitter",
+            "params": {
+                "emit_per_second": 100,
+                "lifetime": {
+                    "min": 0,
+                    "max": 1
+                },
+                "parent": "sun",
+                "origin": {
+                    "x": -5,
+                    "y": 5,
+                    "z": 0
+                },
+                "velocity": {
+                    "x": -10,
+                    "y": 10,
+                    "z": 0
+                },
+                "dispersion": {
+                    "min": 5,
+                    "max": 10,
+                    "delta": 5
+                },
+                "speed": {
+                    "min": 20,
+                    "max": 30,
+                    "delta": 10
+                }
+            }
+        },
+        "affector": {
+            "name": "Particle_Affector",
+            "params": {}
+        },
+        "texture": "textures/particle2.png",
+        "no_fade_color": false
+    }
+},
+
+"star_dust": {
+    "name": "test",
+    "params": {
+        "count": 300,
+        "size": 3,
+        "emitter": {
+            "name": "Star_Dust_Emitter",
+            "params": {
+                "emit_per_second": 100,
+                "lifetime": {
+                    "min": 0,
+                    "max": 1
+                },
+                "velocity": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 150
+                },
+                "start_position": {
+                    "x": -100,
+                    "y": 100,
+                    "z": -300
+                },
+                "end_position": {
+                    "x": 100,
+                    "y": -100,
+                    "z": -300
+                }
+            }
+        },
+        "affector": {
+            "name": "Star_Dust_Affector",
+            "params": {
+                "end": 100
+            }
+        },
+        "texture": "textures/particle2.png",
+        "no_fade_color": true
+    }
+}  
+
+
+}

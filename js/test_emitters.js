@@ -98,8 +98,7 @@ Sphere_Emitter.prototype.emit = function (p)
 
 
 
-
-Star_Dust_Emitter = function ()
+function Star_Dust_Emitter ()
 {
 	My_Lib.Particle_Emitter.apply(this, arguments);
 	this.start_position = new THREE.Vector3(0, 0, 0);
@@ -166,7 +165,7 @@ My_Lib.copy_object( Star_Dust_Emitter.prototype,{
 My_Lib.Register_Class("Star_Dust_Emitter", Star_Dust_Emitter);
 
 
-Star_Dust_Affector = function (end)
+function Star_Dust_Affector (end)
 {
 	this.end = end || 0;
 }

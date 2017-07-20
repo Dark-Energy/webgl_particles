@@ -1,0 +1,22 @@
+	#screen 
+	{
+		width: 800px;
+		height: 600px;
+		/*position: absolute;*/
+		float: left;
+		left: 0;
+		top: 0;
+		z-index: 2;
+	}
+	#control-panel
+	{
+		float: left;
+		background-color: #CCFFCC;
+		min-width: 300px;
+	}
+
+    
+.prop-column
+{
+    display: inline-block;
+}    

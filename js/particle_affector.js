@@ -19,6 +19,9 @@ My_Lib.Particle_Affector.prototype.toJSON = function (child)
 		"name": "Particle_Affector",
 		params : {}
 	};
+    if (child) {
+        return params;
+    }
 	return data;
 }
 

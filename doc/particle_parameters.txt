@@ -1,29 +1,41 @@
 PARTICLE SYSTEM PARAMETERS
 
 count - max particles count
+"hard" paramter, this changes have to recreate particle buffer
 
 size - point size
+"light" parameter, changing have to update uniform
 
 texture - texture name or texture object. 
+"light" parameter, changing by update uniform
 
 emitter - emitter object or description
+"hard" parameter, may request create many things or may not
 
 affector - affector object or description
+"hard" parameter, may request create many things or may not
 
 color - color of particles. Must be in {r,g,b} or string hex '0xffffff'.
+"light" paramter,  changing by update uniform
 
 no_fade_color - if true - particles don't faded, false by default, optional
+"hard" parameter, have to change shader
+unfortunetly three js cannot change shaders, only change materials
 
 end_color - if given, particle color interpolated from 'color' to 'end_color' 
 
 random_color - if false, each particles have identity color, else each particle get randomness color. false by default
 
 
-material features
+blending - 
+blending - choose blending mode
+moderate parameter, need to change blending mode
 
-blending - string parameter, optional, must be on of this:
+string parameter, optional, must be on of this:
+
 no
 additive - One, One (s.rgb + d.rgb)
 alpha - src_alpha, one_minus_src_alpha (s.rgb * s.a + (1 - s.a) * d.rgb)
 one_alpha - one, one_minus_src_alpha (s.rgb + (1 - s.a) * d.rgb)
 alpha_one - src_alpha, one
+

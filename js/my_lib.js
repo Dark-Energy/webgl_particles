@@ -97,7 +97,7 @@ My_Lib.Grid = function (width, height, xsegments, ysegments, texture, material)
 	for(var i = 0;i< ysegments; i++) {
 		for(var k = 0; k < xsegments; k++) {
 			p = new THREE.PlaneBufferGeometry( xsize, ysize);	
-			m = new THREE.Mesh(p, mat);	
+			var m = new THREE.Mesh(p, mat);	
 			m.position.x = xstart+k * xsize;
 			m.position.y = ystart+i * ysize;
 			m._row = k;
@@ -426,10 +426,52 @@ My_Lib.extend_proto = function (proto, methods)
 {
 	var obj = Object.create(proto);
 	My_Lib.copy_object(obj, methods);
-	My_Lib.Application.call(app);
-	return app;
+	My_Lib.Application.call(obj);
+	return obj;
 }
 
+/*
+ugly hack
+*/
+
+My_Lib.event_hub = new Event_Hub();
+
+function Event_Hub() {
+    this.events = {};
+}
+
+Event_Hub.prototype.add_event_listener = function (name, func, obj)
+{
+    if (!this.events[name]) {
+        this.events[name] = [];
+    }
+    this.events[name].push( {name: name, func: func, obj: obj} );
+}
+
+Event_Hub.prototype.emit = function(name, obj)
+{
+    var listeners = this.events[name];
+    if (listeners) {
+        for(var i = 0; i < listeners.length; i++) {
+            var t = listeners[i];
+            t.func.call(t.obj, obj);            
+        }
+    }
+}
+
+
+var run_function = //window.requestAnimationFrame;
+	function(callback){
+		window.setTimeout(callback, 1000 / 60);
+	}
+	
+    
+
+
+My_Lib.create_run_function = function (app) 
+{
+    My_Lib.run = function () { run_function( function () { app.loop(); }); }
+}
 
 My_Lib.Application = function ()
 {
@@ -437,30 +479,27 @@ My_Lib.Application = function ()
 	this.delta_time = 0;
 	this.animated_objects = [];
 	
-	//create run function
-	var run = window.requestAnimationFrame;
-	/*run = function(callback){
-		window.setTimeout(callback, 1000 / 60);
-	}
-	*/
-	var self = this;
+    var self = this;
 	this.run = function ()
 	{
-		run(function () 
+		run_function(function () 
 		{ 
 			self.loop();
+            //My_Lib.event_hub.emit("new_frame");
 		});
 	}
 	
+    //My_Lib.create_run_function(this);
+    
 	this.mouse_controllers = [];
 	
-	/*
-	if (this["start"]) {
-		this.start();
-	}
-	*/
+    //My_Lib.event_hub.add_event_listener("new_frame", this.loop, this);
+    
+    My_Lib.event_hub.add_event_listener("kill_me", function (obj) {
+        this.remove_animated_object(obj);
+    }, this);
+    
 }
-
 
 
 My_Lib.Application.prototype.loop = function () 
@@ -473,8 +512,10 @@ My_Lib.Application.prototype.loop = function ()
 	this.delta_time = delta;
 	this.update(delta);
 	this.render(delta);
-	this.run();		
+	this.run();
+    //My_Lib.run();
 }
+
 
 
 My_Lib.Application.prototype.add_animated_object = function (obj)
@@ -482,6 +523,17 @@ My_Lib.Application.prototype.add_animated_object = function (obj)
 	//fix probably duplicates
 	this.animated_objects.push(obj);
 }
+
+My_Lib.Application.prototype.remove_animated_object = function (obj)
+{
+	for(var i = 0; i < this.animated_objects.length; i++) {
+		if (this.animated_objects[i] === obj) {
+			this.animated_objects.splice(i, 1);
+			break;
+		}
+	}
+}
+
 
 My_Lib.Application.prototype.update_all = function (delta)
 {
@@ -576,4 +628,11 @@ My_Lib.Get_Class = function (name)
 	return My_Lib.Registered_Classes[name];
 }
 
-console.log(THREE.WebGLState);
+
+My_Lib.create_class = function(parent, child, props, name)
+{
+    child.prototype = Object.create(parent.prototype);
+    My_Lib.copy_object(child.prototype, props);
+    child.prototype.contructor = child;
+    My_Lib.Register_Class(child, name);
+}

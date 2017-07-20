@@ -1,0 +1,3 @@
+patch incorrect behavior "setBlending" function in three.js
+add blending option to particles parameters
+add force affector, force base class and constant force class

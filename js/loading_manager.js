@@ -1,3 +1,89 @@
+
+//events: 
+//item_loaded
+//onerror
+//onprogress
+//finished
+My_Lib.Chain_Loader = function ()
+{
+}
+
+My_Lib.Chain_Loader.prototype = {
+	constructor: My_Lib.Chain_Loader,
+	start: function (list) 
+	{
+		this.list = list;
+		this.index = 0;
+		this.load(this.list[0]);
+		this.stop_by_error = false;
+	},
+	
+	next: function(resource)
+	{
+		if (this.item_loaded && resource) {
+			this.item_loaded(resource,this.list[this.index]);
+		}
+		this.index++;
+		if (this.index < this.list.length) {
+			this.load(this.list[this.index]);
+		} else {
+			if (this.finished) {
+				this.finished();
+			}
+		}
+	},
+	
+	do_error: function (error)
+	{
+		if (this.onerror) {
+			this.onerror(error);
+		} else {
+			console.log("Error!", error);		
+		}
+		if (!this.stop_by_error) {
+			this.next();
+		}
+	},
+	
+	do_progress: function ()
+	{
+		if (this.onprogress) {
+			this.onprogress.apply(this, arguments);
+		}
+	},
+		
+	load: function (item)
+	{
+		var self = this;
+		if (this.load_func) {
+			this.load_func(item, 
+			function (item) { self.next.apply(self, arguments); },
+			function (item) { self.do_error.apply(self, arguments); },
+			function (item) { self.do_progress.apply(self, arguments); });
+		}
+	}
+};
+
+
+function test_chain_loader() 
+{
+	var cl = new My_Lib.Chain_Loader();
+	cl.item_loaded = function (item) {console.log(item);}
+	cl.finished = function (item) {console.log("job done");}
+	cl.load_func = function (item, next, error, progress) { 
+		if (item) {
+			next(item);
+		} else {
+			error(item);
+		}
+	}
+	cl.start(["first", "second", null, "tree"]);
+}
+//test_chain_loader();
+
+
+
+
 My_Lib.Loading_Manager = function ()
 {
 	this.resources = {};
@@ -24,7 +110,7 @@ My_Lib.Loading_Manager.prototype = {
 
 		//if not load this async
 		var self = this;
-		texture = this.texture_loader.load(url, function (texture)
+		texture = this.texture_loader.load(name, function (texture)
 		{
 			if (callback) {
 				callback(texture);
@@ -33,54 +119,47 @@ My_Lib.Loading_Manager.prototype = {
 		this.resources[name] = texture;	
 		return texture;
 	},
+	
 
 	load_list: function (resource_list, on_load, load_func, on_progress)
 	{
 		var self = this;
 		
-		var resource_index = 0;
-		
-		function step(resource)
-		{
-			resource_index++;
-			if (resource_index < resource_list.length) {
-				if (self.on_resource_loaded) {
-					self.on_resource_loaded(resource);
-				}
-				load_func(resource_list[resource_index], next, progress, error);
-			} else {
-				if (on_load) {
-					on_load();
-				}
+		var cl = new My_Lib.Chain_Loader();
+		var self = this;
+		cl.onerror = function (error) {
+			console.log("ERROR loading texture", error, cl.list[cl.index]);	
+		}
+		cl.item_loaded = function (resource, name) {
+			self.resources[name] = resource;
+			if (self.on_resource_loaded) {
+				self.on_resource_loaded(resource);
 			}
 		}
-		
-		function next(loaded_resource)
-		{
-			self.resources[resource_list[resource_index]] = loaded_resource;
-			step(loaded_resource);
-		}
-
-		function error(error) 
-		{
-			console.log("ERROR loading texture", error, resource_list[resource_index]);
-			step();
-		}
-		function progress()
-		{
+		cl.on_progress = function () {
 			if (on_progress) {
 				on_progress();
 			}
 		}
+		cl.load_func = function () {
+			load_func.apply(this, arguments);
+		}
+		cl.finished = function ()
+		{
+			if (on_load) {
+				on_load();
+			}
+		}
+		cl.start(resource_list);
 		
-		load_func(resource_list[0], next, progress, error);
 	},
 
 	load_list_textures: function (resource_list, on_load)
 	{
 		var self = this;
-		this.load_list(resource_list, on_load, function (url, next, progress, error) 
+		this.load_list(resource_list, on_load, function (url, next, error, progress ) 
 		{
+			console.log(url);
 			var texture = self.texture_loader.load(url, next, progress, error);
 		});
 	},
@@ -89,7 +168,7 @@ My_Lib.Loading_Manager.prototype = {
 	{
 		var self = this;
 		var loader = new THREE.XHRLoader();	
-		this.load_list(resource_list, on_load, function (url, next, progress, error) 
+		this.load_list(resource_list, on_load, function (url, next, error, progress) 
 		{
 			var texture = loader.load(url, next, progress, error);
 		}, progress);

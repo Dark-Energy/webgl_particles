@@ -1,4 +1,4 @@
-Particle_Forces = {};
+var Particle_Forces = {};
 
 //base class
 Particle_Forces.Force = function ()

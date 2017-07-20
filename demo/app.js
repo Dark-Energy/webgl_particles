@@ -87,7 +87,7 @@ void main() {\
 			"textures/particle1.png",
 			"textures/particle0.jpg",
 		];
-		json_list = [
+		var json_list = [
 		"json/cone_particles1.json",
 		"json/cone_particles2.json",
 		"json/star_dust.json",
@@ -126,24 +126,31 @@ void main() {\
 		this.main_scene.add(shit);
 		
 		var self = this;
-		function add_particles(json) 
+		function add_particles(name) 
 		{
-			var ps = My_Lib.Particle_System.prototype.fromJSON(json, function(){},self.main_scene);
+			var json = My_Lib.Texture_Manager.get(name);
+			var ps = My_Lib.particle_manager.fromJSON(json, function(){},self.main_scene, name);
 			self.main_scene.add(ps.node);
 			self.add_animated_object(ps);
 		}
-		add_particles(My_Lib.Texture_Manager.get("json/cone_particles1.json"));
-		add_particles(My_Lib.Texture_Manager.get("json/cone_particles2.json"));
-		add_particles(My_Lib.Texture_Manager.get("json/star_dust.json"));
+		add_particles("json/cone_particles1.json");
+		add_particles("json/cone_particles2.json");
+		add_particles("json/star_dust.json");
 		
 	}
 
+	my_app.init_ui = function ()
+	{
+		this.control_panel = new Control_Panel();
+		this.control_panel.add_particles( My_Lib.particle_manager.get_particle_names() );
+	}
 	
 	var app = My_Lib.extend_application(my_app);
 	app.start();
 	app.create_main_scene();
 	app.load_resources( function () {
 		app.create_sun();
+		app.init_ui();
 		main_loop();
 	});
 
