@@ -1,0 +1,35 @@
+var test_params = {
+            id: "dummy",
+            texture: "dummy_texture.jpg",
+            count: 666,
+            size: 7,
+            emit_per_second: 999,
+            life_length: 10,
+            color: {r:255, g:255, b:255},
+            blending : "additive",
+            precomputed_alpha: false,
+            emit_method: '',
+            affect_method: '',
+};
+
+var test_particles = 
+{"dummy": test_params,
+"spark": My_Lib.create_clone_object(test_params)};
+
+test_particles.spark.id = "spark";
+test_particles.spark.texture = "spark_texture";
+
+function create_fake_event_hub()
+{
+    event_hub = new Vue( { methods:  {
+        "get_particle_params": 
+            function (id) {
+                logtext("Here is event hub! I get fake particle params for " + id);
+                return test_particles[id];
+            }
+        }
+      }
+    );
+}
+
+create_fake_event_hub();

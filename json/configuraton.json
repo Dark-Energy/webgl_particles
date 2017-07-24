@@ -1,0 +1,19 @@
+{
+    "viewport": {
+        "width": 800,
+        "height": 600
+    },
+    "clear_color": "#0000ff",
+    "main_camera": {
+       "fov": 80,
+       "aspect_ratio": 1.3333333333333333,
+       "near": 0.1,
+       "far": 1000,
+       "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+       }
+    }
+}
+

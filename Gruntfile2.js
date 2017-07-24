@@ -3,11 +3,11 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 	uglify: {
     options: {
-      mangle: true
+      mangle: false
     },
       build: {
-        src: ['src/utils/*.js', 'src/particles/my_lib.js', 'src/particles/*.js', 'src/gui/vueapp.js', 'src/gui/*.js', 'src/app/*.js'],
-        dest: 'build/particles.min.js'
+        src: ['utils/*.js', 'gui/vueapp.js', 'gui/*.js'],
+        dest: 'build/gui.min.js'
       }
 	},
 });

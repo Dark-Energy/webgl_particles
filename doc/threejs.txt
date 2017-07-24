@@ -1,0 +1,8 @@
+*can do intersection check, if object material property 'visible' if false. 
+
+i am need check invisible objects
+
+*color can get string of hexadecimal "0xff00ff" and convert it to color values
+it accept only "css style format", when digits leads with #, for example #ff00ff
+json can't save number in hexadeciaml of any formats
+

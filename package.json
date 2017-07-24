@@ -1,14 +1,40 @@
-﻿{
-	"author"	: "author",
-	"name"		: "project",
-	"version"	: "0.0.1",
-
-	"devDependencies" : {
-		"grunt"					: ">= 0.4",
-		"grunt-cli"				: ">= 0.1.6",
-		"grunt-contrib-watch"	: "~0.3.1",
-		"grunt-contrib-cssmin"	: ">=0.5.0",
-		"grunt-contrib-uglify"	: ">=0.2.0",
-		"grunt-contrib-concat"	: ">=0.1.3"
-	}
+{
+  "author": "dark-energy",
+  "name": "webgl-particles",
+  "version": "0.0.2",
+  "devDependencies": {
+    "grunt-cli": ">= 0.1.6",
+    "grunt-contrib-cssmin": ">=0.5.0",
+    "grunt-contrib-watch": "~0.3.1"
+  },
+  "description": "my particles demo",
+  "directories": {
+    "doc": "doc"
+  },
+  "dependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-uglify": "^3.0.1",
+    "webpack": "^3.3.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "grunt",
+    "gui": "grunt Gruntfile2.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dark-Energy/webgl_particles.git"
+  },
+  "keywords": [
+    "webgl",
+    "3d",
+    "shaders",
+    "gpu",
+    "particles"
+  ],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dark-Energy/webgl_particles/issues"
+  },
+  "homepage": "https://github.com/Dark-Energy/webgl_particles#readme"
 }

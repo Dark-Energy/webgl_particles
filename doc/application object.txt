@@ -1,0 +1,58 @@
+Application 
+
+function constructor take one optoional parameter (config)
+config may be 
+    string containing url
+    'object' containing data like json pared object, look 'config.json' in 'json' folder
+    nothing, then get default configuration
+
+    configuration data getting from url or object are merjed with default configuration. all fields in default rewritten by fields from given configuration.
+    
+    
+function constructor create renderer, create webgl canvas, binding it with dom element, setting some parameters, including
+screen size, 
+background filling color
+
+then constructor create main_scene Scene object and main_camera Camera object and set it properties:
+fov,
+aspect ratio,
+near clipping plane
+far clipping plane
+position
+
+that is i am leazy and i don't wont create main scene and camera by hand every time
+
+LIFHOOK
+
+before carry out all this things, Application call method "before_created", if it given
+
+after carry out all this things, Application call method "created", if it given
+
+=======
+
+Probably, need remove this code from constructor and place it in method "start"?
+
+method "start" will take arguments: 
+"configuration", 
+"create default scene and camera"
+and else other
+
+
+========
+
+loop
+main method starts rendering loop
+loop consists of two stages
+
+1) update
+taken delta which contains delta time interval from last update
+default method call update_all
+update_all - update all animated objects, appended in Application.animatited_objects
+
+
+2) render
+
+default method 
+clear background with default clear color
+set Auto Clear Color to true
+and render main_scene with main_camera

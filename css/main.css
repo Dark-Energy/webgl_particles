@@ -20,3 +20,22 @@
 {
     display: inline-block;
 }    
+
+
+.texture-canvas-obj
+{
+    width: 320px;
+    height: 240px;
+}
+
+
+.texture-canvas
+{
+    float: left;
+}
+
+.texture-info
+{
+    float: left;
+    padding: 10px 10px;
+}

@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+</head>
+
+<body>
+
+<div id="testapp">
+    
+</div>
+
+
+<div id="logscreen">
+    <test-comp :particles=particles ></test-comp>
+</div>
+
+<div id="app">
+
+</div>
+
+
+<script type="text/javascript" src="../sidelibs/three.js"> </script>
+<script type="text/javascript" src="../utils/utils.js"> </script>
+<script type="text/javascript" src="../js/my_lib.js"> </script>
+<script type="text/javascript" src="../js/loading_manager.js"> </script>
+<script type="text/javascript" src="../js/generators.js"> </script>
+<script type="text/javascript" src="../js/particle_emitter.js"> </script>
+<script type="text/javascript" src="../js/particle_affector.js"> </script>
+<script type="text/javascript" src="../js/shaders.js"> </script>
+<script type="text/javascript" src="../js/particles.js"> </script>
+<script type="text/javascript" src="../js/test_emitters.js"> </script>
+<script type="text/javascript" src="../js/custom_emitter.js"> </script>
+<script type="text/javascript" src="../js/forces.js"> </script>
+<script type="text/javascript" src="../demo/state.js"> </script>
+<script type="text/javascript" src="../sidelibs/vue.min.js"> </script>
+<script type="text/javascript" src="../sidelibs/vuex.2.3.1.js"> </script>
+<script type="text/javascript" src="../demo/color_picker.js"> </script>
+ <script type="text/javascript" src="../demo/particles_props.js"> </script>
+ <script type="text/javascript" src="../demo/texture_panel.js"> </script>
+ <script type="text/javascript" src="../demo/particles_panel.js"> </script>
+<script type="text/javascript" src="../demo/control_panel.js"> </script>
+<script type="text/javascript" src="test_data.js"> </script>
+
+
+<script>
+
+
+var fake_texture_panel = 
+{
+    props: ["textures", "selected", "particle_id"],    
+    //template: '<div>This is Fake Texture Panel <div>Particle System id: {{this.particle_id}}</div> <div>Selected: {{selected}}</div> <div> textures: {{textures}}</div></div>'
+    
+    template: '<div>This is Fake Texture Panel <br>Particle System id: {{this.particle_id}} <br>Selected: {{selected}}<br> textures: {{textures}}</div>',
+    
+}
+
+
+var fake_particle_props = 
+{
+    props: ["params"],
+    template: '<div>This is Fake Particle Props <br> {{this.params}}</div>'
+}
+
+
+Particles_Panel.components['particles-props'] = fake_particle_props;
+Particles_Panel.components['texture-panel'] = fake_texture_panel;
+
+
+
+var c = Vue.component("test-comp", Particles_Panel);
+
+var vm2 = new Vue({el: "#logscreen",
+    data: {
+        particles: ["spark", "dummy"], 
+        textures: ["dummy","spark"], 
+        selected: "dummy"
+        },
+    });
+
+
+</script>
+
+</body>
+</html>
