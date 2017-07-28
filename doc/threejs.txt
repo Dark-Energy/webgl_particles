@@ -6,3 +6,10 @@ i am need check invisible objects
 it accept only "css style format", when digits leads with #, for example #ff00ff
 json can't save number in hexadeciaml of any formats
 
+also i add "update" method to Object3D, which resurively update child objects. Each object have "animations" array. Each element must be derived from Base_Animation class. This allows fast and simple create animated scene node.
+
+This is done in "threejs_patches.js" module.
+
+BuG
+
+When saved "toJSON", then saved some variable "matrix", which contain garbage. Need forced update world Matrix

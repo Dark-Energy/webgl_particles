@@ -1,6 +1,7 @@
 {
     "name": "test",
     "params": {
+        "bounding_sphere": 300,
         "count": 300,
         "size": 3,
 		"pre_alpha": true,		

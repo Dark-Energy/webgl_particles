@@ -123,14 +123,20 @@ Control_Panel.prototype.change_some_params = function (id, params)
     }
     
     if (params.emit_per_second !== undefined) {
+        var value = parseFloat(params.emit_per_second);
         ps.set_emission_per_second(params.emit_per_second);
     }
     
     if (params.count !== undefined) {
-        ps.set_particle_count(params.count);
+        var count = parseInt(params.count);
+        if (!count) {
+            count = 0;
+        }
+        ps.set_particle_count(count);
     }
 
     if (params.size !== undefined) {
+        value = parseFloat(params.size);
         ps.set_point_size(params.size);
     }
     

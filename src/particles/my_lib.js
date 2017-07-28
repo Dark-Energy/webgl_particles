@@ -6,21 +6,6 @@ var My_Lib = {};
 
 My_Lib.Viewport = {};
 
-	//FIX
-	THREE.Vector3.prototype.applyMatrix4_rotation = function ( m ) 
-	{
-		// input: THREE.Matrix4 affine matrix
-
-		var x = this.x, y = this.y, z = this.z;
-		var e = m.elements;
-
-		this.x = e[ 0 ] * x + e[ 4 ] * y + e[ 8 ]  * z;
-		this.y = e[ 1 ] * x + e[ 5 ] * y + e[ 9 ]  * z;
-		this.z = e[ 2 ] * x + e[ 6 ] * y + e[ 10 ] * z;
-
-		return this;
- 	}
-
 
 My_Lib.Object_Animation = function (object, animation)
 {
@@ -57,123 +42,6 @@ My_Lib.create_text_image = function (width, height, text, npot, background)
 	}
 	texture.needsUpdate = true; 	
 	return texture;
-}
-
-
-
-/*
-Grid
-*/
-
-My_Lib.Grid = function (width, height, xsegments, ysegments, texture, material)
-{
-	this.xsegments = xsegments;
-	this.ysegments = ysegments;
-	var xsize = width/xsegments;
-	var ysize = height/ysegments;
-	var xstart = width/-2.0 + xsize/2;
-	var ystart = height/-2.0 + ysize/2;
-	
-	var mat = material;
-	if (!material) {
-		mat = new THREE.MeshBasicMaterial({ 
-			opacity: 1, 
-			transparent: true, 
-			depthWrite: true,
-			depthTest: false,
-			map: texture
-		});
-	}
-	
-	this.material = mat;
-
-	var p;
-	this.segments = new Array();
-	this.root = new THREE.Object3D();
-	var tmp = new Array(8);
-	
-	var usize = 1.0 / xsegments;
-	var vsize = 1.0 / ysegments;
-	for(var i = 0;i< ysegments; i++) {
-		for(var k = 0; k < xsegments; k++) {
-			p = new THREE.PlaneBufferGeometry( xsize, ysize);	
-			var m = new THREE.Mesh(p, mat);	
-			m.position.x = xstart+k * xsize;
-			m.position.y = ystart+i * ysize;
-			m._row = k;
-			m._col = i;
-			this.segments.push(m);
-			this.root.add(m);
-			
-			m._pos = new THREE.Vector3(m.position);
-			
-			//0,0, 1, 0, 0, 1, 1, 1	
-			
-			var vrow = 1.0 - vsize*i - vsize;
-			tmp[0] = usize * k; tmp[1] = vrow;
-			tmp[2] = usize * k + usize; tmp[3] = vrow;
-			tmp[4] = usize * k; tmp[5] = vrow + vsize;
-			tmp[6] = usize * k+usize; tmp[7] = vrow + vsize;
-			
-			//01, 11, 00, 10
-			//01, 11, 00, 10
-			/*
-			var vrow = vsize*i + vsize;
-			tmp[0] = usize * k; tmp[1] = vrow+ vsize;
-			tmp[2] = usize * k + usize; tmp[3] = vrow+vsize;
-			tmp[4] = usize * k; tmp[5] = vrow;
-			tmp[6] = usize * k+usize; tmp[7] = vrow;
-			*/
-			p.attributes.uv.array = new Float32Array(tmp);			
-		}
-	}
-	
-}
-
-My_Lib.Grid.prototype.update = function (dt)
-{
-	if (this.animation && this.animation_live) {
-		this.update_animation(dt);
-	}
-}
-
-
-My_Lib.Grid.prototype.start_animation = function ()
-{
-	if (!this.animation) {
-		console.log("Grid Error! Trying start animaton, but animation undefined!");
-		return;
-	}
-	//dont start new animation, until other is lived
-	if (this.animation_live) {
-		return;
-	}
-	for(var k = 0; k < this.segments.length; k++) {
-		this.animation.start(this.segments[k]);
-	}
-	this.animation_live = true;
-}
-
-My_Lib.Grid.prototype.update_animation = function (dt)
-{
-	var animation_live = false;
-	for(var k = 0; k < this.segments.length; k++) {
-		var s = this.segments[k];
-		if (s._wait > 0) {
-			s._wait -= dt;
-			animation_live = true;
-		}
-		else {
-			this.animation.run(dt, s);
-			if (!animation_live) {
-				animation_live = (s._is_live);
-			}
-		}
-	}
-	this.animation_live = animation_live;
-	if (!this.animation_live) {
-		this.animation.done();
-	}
 }
 
 
@@ -301,43 +169,6 @@ My_Lib.Overlay.prototype.render = function (renderer)
 }
 
 
-My_Lib.mouse_coords_to_vector = function (dom_screen, event) 
-{
-	var offset = dom_screen.getBoundingClientRect();
-	var width = dom_screen.clientWidth;
-	var height = dom_screen.clientHeight;
-	var x = ((event.clientX - offset.left) / width) * 2 - 1;
-	var y = -(((event.clientY - offset.top) / height) * 2 - 1);
-	var vector = new THREE.Vector3( x, y, 1 );
-	return vector;
-}
-
-My_Lib.mouse_coords_to_ray = function (dom_screen, event, camera) 
-{
-	var offset = dom_screen.getBoundingClientRect();
-	var width = dom_screen.clientWidth;
-	var height = dom_screen.clientHeight;
-	var x = ((event.clientX - offset.left) / width) * 2 - 1;
-	var y = -(((event.clientY - offset.top) / height) * 2 - 1);
-	var vector = new THREE.Vector3( x, y, 1 );
-
-	vector.unproject(camera);
-	var ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
-	return ray;
-}
-
-
-My_Lib.find_intersection_with_mouse_vector = function(vector, camera, root)
-{
-	vector.unproject(camera);
-	var ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
-	// create an array containing all objects in the scene with which the ray intersects
-	//var intersects = ray.intersectObjects( [grid_text.root], true ); 
-	//console.log(fake_plane.root.children[0].geometry);
-	var intersects = ray.intersectObjects( [root], true ); 
-	return intersects;
-}
-
 My_Lib.Mouse_Controller = function (root, over, click, callback)
 {
 	this.root = root;
@@ -345,20 +176,6 @@ My_Lib.Mouse_Controller = function (root, over, click, callback)
 	this.click = !!click;
 	this.callback = callback;
 }
-
-/*
-main class
-this has abstract virtual methods
-start - which create renderer and conduct start initializations
-update - updated scene objects, animations, phisics
-render - control scene rendering
-this methods must rewrite on derived classes
-need set 
-main_camera - camera which point of view render whole scene and user interacts
-dom_screen - dom element which contain canvas and display scene
-
-
-*/
 
 
 
@@ -456,15 +273,4 @@ My_Lib.create_class = function(parent, child, props, name)
 
 
 
-My_Lib.every_property = function(obj, callback) 
-{
-    if (!callback) {
-        console.log("callback given every_property is undefined or null!")
-        return;
-    }
-    for(var key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            callback(key);
-        }
-    }
-}
+

@@ -1,0 +1,18 @@
+Emitter work in local space (space of object). Generated Positions are multiplied by matrixWorld to transform to world space. However velocities are multiplied by 3x3 submatrix matrixWorld. Then velocities are scaled. This need, because velocities must be normalized before rotation. 
+
+abstract emit method
+
+function emit(particle, color, matrix)
+{
+    if (matrix) {
+        position.applyMatrix4(matrix);
+        
+        velocity.applyMatrix3(matrix);
+        
+        //now apply scalar
+        //three.js contain evil check to finite
+        velocity.x *= scalar;
+        velocity.y *= scalar;
+        velocity.z *= scalar;
+    }
+}

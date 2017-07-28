@@ -1,3 +1,18 @@
+/*
+main class
+this has abstract virtual methods
+start - which create renderer and conduct start initializations
+update - updated scene objects, animations, phisics
+render - control scene rendering
+this methods must rewrite on derived classes
+need set 
+main_camera - camera which point of view render whole scene and user interacts
+dom_screen - dom element which contain canvas and display scene
+
+
+*/
+
+
 Application = function (config)
 {
 
@@ -15,6 +30,7 @@ Application = function (config)
 
 Application.prototype.start = function (config)
 {
+    console.log("start");
    this._set_configuration(config);
 }
 
@@ -81,12 +97,19 @@ Application.prototype.get_default_configuration = function ()
 
 Application.prototype._create_render = function (json)
 {
-	this.renderer = new THREE.WebGLRenderer(json.render_params);
-	this.dom_screen = document.getElementById(json.dom_element);
+    if (this.dom_screen || this.renderer) {
+        alert("Create render alert! Something strange happenes!");
+    }
+    if (!this.dom_screen) {
+        this.dom_screen = document.getElementById(json.dom_element);
+    }
+    if (!this.renderer) {
+        this.renderer = new THREE.WebGLRenderer(json.render_params);
+    }
     if (!!!this.dom_screen || typeof this.dom_screen === 'undefined') {
         console.error("Some terrorous happens! dom element for screen not found! element id is " + json.dom_element);
     }
-    console.log("found dome element " + json.dom_element);
+    //console.log("found dome element " + json.dom_element);
     this.dom_screen.appendChild(this.renderer.domElement);
     
     
@@ -112,6 +135,7 @@ Application.prototype._create_main_scene = function (json)
     if (!this.main_camera) {
         this.main_camera = new THREE.PerspectiveCamera(camera.fov, camera.aspect_ratio, camera.near, camera.far);
         this.main_scene.add(this.main_camera);
+        this.main_camera.name = "main_camera";
     } else {
         this.main_camera.fov = camera.fov;
         this.main_camera.near = camera.near;
@@ -126,9 +150,9 @@ Application.prototype._create_main_scene = function (json)
 Application.prototype.apply_configuration = function (json)
 {
     this.configuration = json;
-   this._create_render(json);
-   this._create_main_scene(json);
-   this._lifecycle_event("created");
+    this._create_render(json);
+    this._create_main_scene(json);
+    this._lifecycle_event("created");
 }
 
 Application.prototype.load_configuration = function (url)
@@ -138,6 +162,9 @@ Application.prototype.load_configuration = function (url)
     var self = this;
     
     var config = self.get_default_configuration();
+    
+    var configuration_is_applied = false;
+    
     function onload (data) {
         console.log("configuration loaded from url <<" + url + ">>");
         var obj = JSON.parse(data);
@@ -145,11 +172,15 @@ Application.prototype.load_configuration = function (url)
         //though user naven't to rewrite ALL config to change some params
         _.copy_object(config, obj);
         self.apply_configuration(config);
+        console.log(configuration_is_applied, "onload");        
+        configuration_is_applied = true;
     }
     function progress() {}
     function error(event) {
         console.error("Error on loading config!", event.target.status);
         console.log("Setting default configuration");
+        console.log(configuration_is_applied, "error");        
+        configuration_is_applied = true;        
         self.apply_configuration(config);
     }
     xhr.load(url, onload, progress, error);
@@ -158,18 +189,22 @@ Application.prototype.load_configuration = function (url)
 
 Application.prototype._set_configuration = function (config)
 {
+    var default_config = this.get_default_configuration();
+    
     //this is url of configuration file
     if (typeof config === 'string') {
         console.log("get configuration from url >> " + config);
         this.load_configuration(config);
-    //this is object filled with data
+        
+        //this is object filled with data
     } else if (typeof config === 'object') {
         console.log("get configuration from user object");
-        this.apply_configuration(config);
+        _.copy_object(default_config,config);
+        this.apply_configuration(default_config);
     //configuration not given, use default
     } else {
-        console.log("get default configration");
-       this.apply_configuration(this.get_default_configuration());
+        console.log("_set_configuration: set default configration");
+       this.apply_configuration(default_config);
     }
 }
 
@@ -180,14 +215,12 @@ Application.extend = function (methods, child_func)
     if (typeof child_func === 'undefined') {
         Child = function ()
         {
-            console.log("exec child constructor");
             Application.apply(this, arguments);
         }
     } else {
         Child = child_func;
     }
 
-    console.log("create child");
     //create new object and set prototype chain
 	Child.prototype = Object.create(Application.prototype);
     //copy methods to new object
@@ -263,7 +296,7 @@ Application.prototype.create_mouse_move_listener = function ()
 	var self = this;
 	this.mouse_move_listener = true;
 	function mouse_move_listener(event) {
-		var vector = My_Lib.mouse_coords_to_vector(self.dom_screen, event);		
+		var vector = Mouse_Intersector.mouse_coords_to_vector(self.dom_screen, event);		
 		self.find_mouse_over_intersections(vector);
 	};
 	document.addEventListener("mousemove", mouse_move_listener);

@@ -1,0 +1,86 @@
+Запись json это просто объект, с полями metadata, содержащим общую иформацию, массивом текстур и массивом материалов, а также ещё одним полем, в котором содержится корневой объект сцены. Дальше вся сцена представляется как граф, и вкладывается в этот объект. 
+
+   "metadata": {
+      "version": 4.4,
+      "type": "Object",
+      "generator": "Object3D.toJSON"
+   },
+
+      "geometries": array of objects [
+      {
+         "uuid": "052B5431-8BA5-4D00-BAAC-AFE38D1200EF",
+         "type": "SphereGeometry",
+         "radius": 7,
+         "widthSegments": 20,
+         "heightSegments": 20
+      }
+   ],
+   "materials": array of objects
+      {
+         "uuid": "EFE74E32-B804-4BAD-8BDC-5F5E368F4A2D",
+         "type": "MeshBasicMaterial",
+         "color": 16750848,
+         "depthFunc": 3,
+         "depthTest": true,
+         "depthWrite": true,
+         "skinning": false,
+         "morphTargets": false
+      }
+   ],
+
+      "object": {
+      "uuid": "119349A7-82BF-4513-AC1D-1D8D7023AE05",
+      "type": "Scene",
+      matrix of local transformations, represented as array of 16 numbers
+      doesn't updated before recorded
+      "matrix": [ 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 ], 
+              "children":  - array of child objects
+            "uuid": "8088B9E7-8B4A-4610-AD4B-529BDBDF5D5D",
+            "type": "PerspectiveCamera",
+            "matrix": [
+            "fov": 80,
+            "zoom": 1,
+            "near": 0.1,
+            "far": 1000,
+            "focus": 10,
+            "aspect": 1.3333333333333333,
+            "filmGauge": 35,
+            "filmOffset": 0
+            }              
+         {
+            "uuid": "1AD60F93-0495-43F8-90F5-51649048C5CE",
+            "type": "PointLight",
+            "matrix": [
+            
+      
+         {
+            "uuid": "67B87F0B-F3E5-4AD1-AA8C-CCD27B65B8D7",
+            "type": "Mesh",
+            "name": "sun",
+            "matrix": [
+            geometry and material record separated, here is only their uuid
+            "geometry": "052B5431-8BA5-4D00-BAAC-AFE38D1200EF",
+            "material": "EFE74E32-B804-4BAD-8BDC-5F5E368F4A2D"
+         }
+      
+      
+Object3d это не просто узел графа сцены. Кто-то поленился писать стопицот методов toJson в каждом объекте, поэтому написал одни в корневом классе иерерархии. ОН записывает ВСЁ - материалы, геомеотрию, типы геометрии, все эти шарики, бублики, вместе с их параметрами. Это ужасный код, его нельзя поддерживать или расширять.
+
+Он содержит такое свойство как
+	isMesh: true,
+    this.drawMode = TrianglesDrawMode;
+    
+    и метод
+    
+    updateMorphTargets:
+    
+    Учитывая, что сами morphTargets находятся в geometry, я считаю это признаком плохого дизайна. 
+    Впрочем, сам по себе Mesh имеет также свойства
+            this.morphTargetInfluences = [];
+			this.morphTargetDictionary = {}; 
+            
+Наконец, он также содержит метод raycast. Он полностью может также находиться внутри Object3D, поскольку используют всю ту же самую информацию. Окромя того, что в геометрии находятся треугольники. 
+
+Точно также Points содержит только ещё один метод проверки попадания и свойство isPoints, равное true
+
+Кстати, вместое matrixWorld записывается некая таблица matrix, которая используется для хранения промежуточных значений трансформации. Зачастую она оказывается единичной. Поэтому перед вызовом метода toJSON надо также вызывать updateWorldMatrix(force=true). Принудительное обновление матрицы. 

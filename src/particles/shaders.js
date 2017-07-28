@@ -19,7 +19,7 @@ var vertex_shader = [
     'uniform vec3 particle_color;',
 '#endif',
 'void main () {',
-	'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+	'gl_Position = projectionMatrix * viewMatrix * vec4( position, 1.0 );',
 '#ifdef DYNAMIC_COLORS',
 	'vcolor.rgb = color.rgb;',
 '#else',

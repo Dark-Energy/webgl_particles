@@ -1,0 +1,14 @@
+{
+    "name": "sun scene",
+    "textures": [
+			"textures/particle2.png",
+			"textures/particle1.png",
+            "textures/Particle4.jpg",
+            "textures/spark.png"
+    ],
+    "particles": [
+		"json/cone_particles1.json",
+		"json/cone_particles2.json",
+		"json/star_dust.json"
+    ]
+}

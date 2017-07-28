@@ -4,9 +4,10 @@ My_Lib.Particle_Emitter = function (emit_per_second)
 {
 	this.emit_delta = 0;
 	this.emit_count = 0;
-	this.emit_per_second = emit_per_second || 10;
+	this.emit_per_second = emit_per_second || 5;
 	//linear interpolation = min + random * (max-min)	
-	this.lifetime = {"min": 0, "max":1.0};
+	this.lifetime = {"min": 0, "max":2.0};
+    //this.velocity = {x: 0, y: 1, z: 0};
 }
 
 My_Lib.Particle_Emitter.prototype.emit_life = function ()
@@ -27,24 +28,16 @@ My_Lib.Particle_Emitter.prototype.calc_emitted_particles = function (dt)
 	return need_emit;
 }
 
-/*
-need for bindings to scene objects
-scene is optional, need when 'parent' is string
-'root' must be scene graph contains the parent object
-*/
-My_Lib.Particle_Emitter.prototype.set_parent_object = function (parent, root)
-{
-	if (typeof parent === 'string') {
-		if (root) {
-			this.parent = root.getObjectByName(parent);
-		}
-	} else {
-		this.parent = parent;
-	}
-}
 
-My_Lib.Particle_Emitter.prototype.emit = function (p)
+My_Lib.Particle_Emitter.prototype.emit = function (p, c, matrix)
 {
+    p.position.set(0, 0, 0);
+    p.velocity.set(0, 1, 0);
+    
+    if (matrix) {
+        p.position.applyMatrix4(matrix);
+        p.velocity.applyMatrix4_rotation(matrix);
+    }
 }
 
 
@@ -57,13 +50,6 @@ My_Lib.Particle_Emitter.prototype.toJSON = function (child)
 			"max": this.lifetime.max
 		},
 	};
-	if (this.parent) {
-		if (typeof this.parent === 'string') {
-			params.parent = this.parent;
-		} else {
-			params.parent = this.parent.name;
-		}
-	}
 	if (child) {
 		return params;
 	}

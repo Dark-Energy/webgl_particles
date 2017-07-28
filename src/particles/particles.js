@@ -11,13 +11,11 @@ My_Lib.Particle_System = function (params)
 		this.affector = new My_Lib.Particle_Affector();
 	}
     
-
-	this.particle_lifetime = params.particle_lifetime || 3.0;
+    this.particle_lifetime = params.particle_lifetime = params.particle_lifetime || 3.0;
+	
 	
 	this.params = params;
-	this.texture = params.texture;
-	this.no_fade_color = params.no_fade_color = !!params.no_fade_color;
-    
+    params.no_fade_color = !!params.no_fade_color;
     
 	if (typeof this.params.pre_alpha === 'undefined'){
 		this.params.pre_alpha = true;
@@ -39,6 +37,8 @@ My_Lib.Particle_System = function (params)
     if (!params.blending) {
         params.blending = "one_alpha";
     }
+    
+    this.texture = params.texture;
 	
 	this.dynamic_color = (params.end_color || params.random_color);
 
@@ -46,8 +46,11 @@ My_Lib.Particle_System = function (params)
 	var count = params.count || 100;
 	
 	this.material = this.create_particle_material();
-	this.node = new THREE.Points(this.create_particle_geometry(count), this.material);
-    
+	this.node = new Particles_Points(this.create_particle_geometry(count), this.material);
+
+    if (typeof this.params.bounding_sphere !== 'undefined') {
+        this.node.boundingSphere.radius = params.bounding_sphere;
+    }
 }
 
 
@@ -63,24 +66,30 @@ My_Lib.Particle_System.prototype.create = function (count, size)
 {
 }
 
+My_Lib.Particle_System.prototype.create_particle_data = function (count)
+{
+    var particle_data = new Array(count);
+    var p;
+    for(var i =0;i < count; i++) {
+		p = {};
+		p.position = new THREE.Vector3(0,0,0);
+		p.velocity = new THREE.Vector3(0,0,0);
+		p.lifetime = 0;        
+		particle_data[i] = p;
+    }
+    this.particle_data = particle_data;
+}
 
 My_Lib.Particle_System.prototype.create_particle_geometry = function(count)
 {
-	this.particle_data = new Array(count);
+    this.create_particle_data(count);
+    
 	var vertices = new Float32Array(count * 3); // position
 	var colors = new Float32Array(count * 3);
 	var params = new Float32Array(count);
 	
-	
-	var p;
-	for (var i = 0; i < count; i++) {
+    for (var i = 0; i < count; i++) {
 		//create particle
-		p = {};
-		p.position = new THREE.Vector3(0,0,0);
-		p.velocity = new THREE.Vector3(0,0,0);
-		this.particle_data[i] = p;
-		p.lifetime = 0;
-
 		vertices[i*3] = 0;
 		vertices[i*3+1] = 0;
 		vertices[i*3+2] = 0;
@@ -105,13 +114,7 @@ My_Lib.Particle_System.prototype.create_particle_geometry = function(count)
 	geom.addAttribute('color', this.geometry.colors);
 	geom.addAttribute('params', this.geometry.params);	
 
-	//this.emit_particles(0, this.emitter.emit_per_second);
-	
-	//this.geometry.vertices.needsUpdate = true;
-	//this.geometry.params.needsUpdate = true;
-	//this.geometry.colors.needsUpdate = true;
-
-	return geom;
+    return geom;
 }
 
 
@@ -121,7 +124,7 @@ My_Lib.Particle_System.prototype.generate_material_name = function ()
 	if (!!this.texture) {
 		my_name +=  "_WITH_TEXTURE";
 	}
-	if (!!this.no_fade_color) {
+	if (this.params.no_fade_color) {
 		my_name += "_NO_FADE_COLOR";
 	}
 	return my_name;
@@ -215,31 +218,29 @@ My_Lib.Particle_System.prototype.calc_defines = function ()
 	if (!!this.texture) {
         defines["PARTICLE_TEXTURE"] = true;
     }
-    if (!!this.no_fade_color) {
+    if (this.params.no_fade_color) {
         defines["NO_FADE_COLOR"] = true;
     }
     return defines;
 }
 
-My_Lib.Particle_System.prototype.create_particle_material = function()
+
+My_Lib.Particle_System.prototype.select_texture = function (texture)
 {
 	if (typeof this.texture === 'string') {
 		this.texture = My_Lib.Texture_Manager.get(this.texture);
+        if (!this.texture) {
+            console.error("Oh, not found texture " + this.params.texture + " in create particle material!");
+        }
 	}
+}
+
+My_Lib.Particle_System.prototype.create_particle_material = function()
+{
 	
-	var blending = THREE.CustomBlending;
-	var factors = this.blending_mode["one_alpha"];
-	var str_blending = this.params["blending"];
-	if (str_blending) {
-		if (str_blending === 'no') {
-			blending = THREE.NoBlending;
-		} else {
-			if (this.blending_mode[str_blending]) {
-				factors = this.blending_mode[str_blending];
-			}
-		}
-	}
-	
+    this.select_texture(this.texture);
+    
+    var blend_obj = this.convert_blending_mode(this.params.blending);
     
     
     var uniforms = this.create_uniforms();
@@ -249,9 +250,9 @@ My_Lib.Particle_System.prototype.create_particle_material = function()
 		transparent: true,
 		depthWrite: this.params.depth_write,
 		depthTest: this.params.depth_test,
-		blending: blending,
-		blendSrc: factors.blendSrc,
-		blendDst: factors.blendDst,
+        blending: blend_obj.blending,
+        blendSrc: blend_obj.factors.blendSrc,
+        blendDst: blend_obj.factors.blendDst,
 		defines: defines,
 		uniforms: uniforms,
 		vertexShader: Particle_Shaders.vertex,
@@ -265,7 +266,6 @@ My_Lib.Particle_System.prototype.set_pre_alpha = function (pre_alpha)
 {
     if (this.params.pre_alpha !== !!pre_alpha) {
         this.params.pre_alpha = pre_alpha;
-            console.log("a");
         this.node.material = this.material = this.create_particle_material();
     }
 }
@@ -298,10 +298,12 @@ My_Lib.Particle_System.prototype.emit_particles = function (dt, need_emit)
 	//var colors = this.geometry.colors.array;
 	//var dummy_color = new THREE.Color(1,1,1);
 	
+    this.node.updateMatrixWorld(true);
+    var matrix = this.node.matrixWorld;
 	for(var i =0; i < this.particle_data.length && need_emit > 0; i++) {
 		if (!(params[i] > 0)) {
 			p = this.particle_data[i];
-			this.emitter.emit(p);
+			this.emitter.emit(p, null, matrix);
 			p.lifetime = this.particle_lifetime;
 			verts[i*3] = p.position.x;
 			verts[i*3+1] = p.position.y;
@@ -348,7 +350,7 @@ My_Lib.Particle_System.prototype.update_particle_geometry = function (dt)
 	
 	this.geometry.vertices.needsUpdate = true;
 	this.geometry.params.needsUpdate = true;
-	//this.geometry.colors.needsUpdate = true;
+	this.geometry.colors.needsUpdate = true;
 }
 
 
@@ -405,107 +407,8 @@ My_Lib.Particle_System.prototype.set_color = function (color)
     this.params.color.b = color.b;
 }
 
-My_Lib.Particle_Manager_Class = function ()
+My_Lib.Particle_System.prototype.set_bounding_sphere_radius = function (radius)
 {
-	this.particles = {};
+    this.node.boundingSphere.radius = radius;
 }
 
-
-My_Lib.Particle_Manager_Class.prototype.fromJSON = function (json, callback, root, name)
-{
-	if (this.particles[name]) {
-		console.log("WARNING Particle Manager! Particle System with this name already exists", name);
-	}
-	
-	try
-	{
-		var data = JSON.parse(json);
-	}
-	catch (e)
-	{
-		console.log("error parsing json on ", name, json);
-		throw e;
-	}
-	if (data.params.emitter) {
-		var emitter = My_Lib.Get_Class(data.params.emitter.name);
-		if (emitter) {
-			emitter = new emitter();
-		} else {
-			emitter = new My_Lib.Particle_Emitter();
-		}
-		emitter.parse(data.params.emitter.params);
-		if (data.params.emitter.params.parent) {
-			emitter.set_parent_object(data.params.emitter.params.parent, root);
-		}
-		data.params.emitter = emitter;
-	} 
-	
-	
-	if (data.params.affector) {
-		var affector = My_Lib.Get_Class(data.params.affector.name);
-		if (affector) {
-			affector = new affector();
-		} else {
-			affector = new My_Lib.Particle_Affector();
-		}
-		affector.parse(data.params.affector.params);
-		data.params.affector = affector;
-	}
-	var ps = new My_Lib.Particle_System(data.params);
-	My_Lib.Texture_Manager.get_async(data.params.texture, callback);
-
-	if (callback) {
-		callback(ps);
-	}
-	this.particles[name] = ps;	
-	return ps;
-}
-
-My_Lib.Particle_Manager_Class.prototype.load_scene = function (json, callback, root)
-{
-
-	var list = [];
-	for(var key in json) {
-		if (Object.prototype.hasOwnProperty.call(json, key)) {
-			list.push( {key: json[key]} );
-		}
-	}
-	
-	var cl = new My_Lib.Chain_Loader();
-	var self = this;
-	cl.item_loaded = function (item, name)
-	{
-		self.particles[name] = item;
-	}
-	cl.finished = function () 
-	{
-		if (callback) { callback();}
-	}
-	cl.load_func = function (item, next) {
-		self.fromJSON(item, function () {next();}, root, cl.list[cl.index]);
-	}
-}
-
-My_Lib.Particle_Manager_Class.prototype.get_particle_names = function ()
-{
-	var names = [];
-	for(var key in this.particles) {
-		names.push(key);
-	}
-	return names;
-}
-
-My_Lib.Particle_Manager_Class.prototype.remove_particles = function (name)
-{
-	var ps = this.particles[name];
-	if (ps) {
-		ps.suicide();
-		delete this.particles[name];
-	}
-}
-
-My_Lib.particle_manager = new My_Lib.Particle_Manager_Class();
-
-My_Lib.Particles_Config = {
-"box_size": 10
-};

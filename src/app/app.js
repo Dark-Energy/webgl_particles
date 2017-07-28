@@ -5,14 +5,9 @@ function init()
 	var my_app = {};
 
     
-   my_app.load_res = function ()
-   {
-        var xhr = new THREE.XHRLoader();
-        var self = this;
-        var resources;
-        function create_default_data()
+    my_app.create_default_data = function()
         {
-            resources = {
+            var data = {
                 "textures": [
                     "textures/particle2.png",
                     "textures/particle1.png",
@@ -25,52 +20,28 @@ function init()
                 "json/star_dust.json",
             ]
            };
+           return data;
         }
-        function onload (data)
-        {
-            try{
-                resources = JSON.parse(data);
-           } 
-           catch(e) {
-                console.error("error parsing resources ", e);
-                create_default_data();
-           }
-           self.resources_loaded(resources);
-        }
-        function progress ()
-        {
-        }
-        function error (event)
-        {
-            console.error("ERror! Failed loading resources!", event.target);
-            create_default_data();
-            self.resources_loaded(resources);
-        }
-        xhr.load("json/resources.json", onload, undefined, error);
-   }
+
 	
 
     my_app.resources_loaded = function (data)
     {
-        	this.resource_list = data.textures;
+          	this.resource_list = data.textures;
             var json_list = data.particles;
 
             var self = this;            
-            function on_load()
-            {
-            self.create_sun();
-            self.init_ui();
-            self.loop();
-            
-            }
-            
-    		My_Lib.Texture_Manager.load_list_textures(this.resource_list, function (){
-			My_Lib.Texture_Manager.load_list_json(json_list, function () {
-				on_load();
-			})
-		});
-        
-       
+               self.create_sun();
+               self.init_ui();
+               self.loop();
+    }
+    
+    my_app.load_res = function ()
+    {
+        var pm = new Package_Manager();
+        var self = this;
+        pm.data_loaded =  function (data) { self.resources_loaded(data)};
+        pm.load("json/sun.json", this.create_default_data());
     }
     
 
@@ -89,12 +60,21 @@ function init()
 		this.main_camera.lookAt(sphere.position);	
 		this.main_camera.position.z = 10;
 		
-		var contr = new My_Lib.Euler_Controller(sphere, 0, 60,0);
-		this.add_animated_object(contr);
+		//var contr = new My_Lib.Euler_Controller(sphere, 0, 60,0);
+		//this.add_animated_object(contr);
+        
+        var contr = new Euler_Animation(0, 60,0);
+        sphere.add_animation(contr);
+
 		
 		var self = this;
 
-
+        /*var t = this.main_scene.getObjectByName("sun");
+        sphere.updateMatrixWorld();
+        console.log(sphere.matrixWorld);
+        console.log(JSON.stringify(this.main_scene.toJSON(), null, '   '));
+            */
+        
 		var shit = new THREE.Object3D();
 		shit.position.set(0, 0, 0);
 		this.main_scene.add(shit);
@@ -104,7 +84,6 @@ function init()
 		{
 			var json = My_Lib.Texture_Manager.get(name);
 			var ps = My_Lib.particle_manager.fromJSON(json, function(){},self.main_scene, name);
-			self.main_scene.add(ps.node);
 			self.add_animated_object(ps);
 		}
 		add_particles("json/cone_particles1.json");
@@ -126,8 +105,21 @@ function init()
     {
         var self = this;
         this.load_res();
+        
+        this.dom_screen.addEventListener("click", function (event) {
+            var ray = Mouse_Intersector.mouse_coords_to_ray(self.dom_screen, event, self.main_camera);
+            var intersects = ray.intersectObjects( [self.main_scene], true ); 
+            console.log(intersects);
+        });
     }
 
+    my_app.update = function (dt)
+    {
+        Application.prototype.update.call(this, dt);
+        //console.log(this.main_scene.update);
+        this.main_scene.update(dt);
+    }
+    
 	
 	var Particles_Demo = Application.extend(my_app);
     var app = new Particles_Demo();

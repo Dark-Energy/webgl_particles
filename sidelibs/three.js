@@ -40018,7 +40018,7 @@
 
 	function intersectObject( object, raycaster, intersects, recursive ) {
 
-		//if ( object.visible === false ) return;
+		if ( object.visible === false ) return;
 
 		object.raycast( raycaster, intersects );
 

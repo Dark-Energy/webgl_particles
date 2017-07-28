@@ -53,7 +53,9 @@ Cone_Emitter.prototype.set_dispersion = function (min, max)
 }
 
 
-Cone_Emitter.prototype.emit = function (p, color)
+
+
+Cone_Emitter.prototype.emit = function (p, color, matrix)
 {
 	p.position.copy(this.origin);
 	
@@ -62,11 +64,16 @@ Cone_Emitter.prototype.emit = function (p, color)
 	p.velocity.add(this.velocity).normalize();
 	
     
-	if (this.parent) {
+	/*if (this.parent) {
 		this.parent.localToWorld(p.position);
 		p.velocity.applyMatrix4_rotation(this.parent.matrixWorld);
-	}
+	}*/
     
+    if (matrix) {
+        p.position.applyMatrix4(matrix);
+        p.velocity.applyMatrix4_rotation(matrix);
+    }
+        
 	p.velocity.multiplyScalar(Math.random()*this.speed.delta + this.speed.min);	
 	
     
