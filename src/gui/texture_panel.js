@@ -30,11 +30,16 @@ editor.Texture_Panel =
             selected_texture: '',
             texture_width : 0,
             texture_height : 0,
-            format : ''
+            format : '',
+            panel_visible: false,
         }
     },
     
     methods: {
+        show_panel: function (event)
+        {
+            this.panel_visible = !this.panel_visible;
+        },
         choose_texture: function(event)
         {
             this.selected = event.target.value;

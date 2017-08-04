@@ -1,0 +1,52 @@
+Scene_Serializer use for save, particle and animations to json and loading.
+
+
+var ss = new Scene_Serializer();
+
+this method pack all scene to object, represtened json data and return it
+var data = ss.toJSON(ss)
+
+var str = JSON.stringify(data)
+
+
+this method restore scene, particles and animations from json object
+Scene_Serializer.prototype.load = function (json)
+
+this method load json from url and parse it, getting json-object. then it call method 'load', given json as argument
+Scene_Serializer.load_from_json(url)
+
+for this case Scene_Serializer has event scene_loaded, which call when scene is really loaded (before method load returns).
+
+
+Scene_Serializer depenend on 
+
+My_Lib.particle_manager
+Abstract_Fabric and mechanism of Registering Classes in My_Lib
+
+
+mixin to Object3D method replace_object_with_this, which using in Particle System Fabric
+
+mixin to Object3D method collect_animations
+also Scene_Serializer append 'particles' and 'myanimations' blocks to high level of json object
+
+
+================
+Loading Scene
+
+
+        var ser = new Scene_Serializer();                
+        ser.scene_loaded = function (scene)
+        {
+            self.main_scene = scene;
+            self.main_camera = scene.getObjectByName("main_camera");
+        }
+        ser.load_from_json("json/scene.json");
+        
+        
+
+================
+Save Scene
+      
+var data = ss.toJSON(ss)
+var str = JSON.stringify(data, null, ' ')
+        

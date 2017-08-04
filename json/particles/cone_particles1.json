@@ -1,9 +1,11 @@
 {
-    "name": "test",
+    "name": "cone1",
     "params": {
         "count": 300,
         "size": 2,
         "parent": "sun",        
+		"pre_alpha": true,
+		"blending": "one_alpha",
         "particle_lifetime": 1,
                 "color": {
 					"r": 1,
@@ -20,12 +22,12 @@
                     "max": 1
                 },
                 "origin": {
-                    "x": -5,
+                    "x": 5,
                     "y": 5,
                     "z": 0
                 },
                 "velocity": {
-                    "x": -10,
+                    "x": 10,
                     "y": 10,
                     "z": 0
                 },
@@ -42,8 +44,19 @@
             }
         },
         "affector": {
-            "name": "Particle_Affector",
-            "params": {}
+            "name": "Force_Affector",
+            "params": {
+				"forces": [
+					{
+						"name": "Constant_Force",
+						"force": {
+							"x": 100,
+							"y": 0,
+							"z": 0
+						}
+					}
+				]
+			}
         },
         "texture": "textures/particle2.png",
         "no_fade_color": false

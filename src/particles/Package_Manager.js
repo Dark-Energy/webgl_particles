@@ -16,6 +16,7 @@ Package_Manager.prototype.load = function (url, defaults)
     function onload (data) {
         self.state["type"] = "done";
         self.state["data"] = data;
+        console.log("onload packaged");
         self.parse_package_description(data);        
     }    
     function error(event) {
@@ -33,7 +34,7 @@ Package_Manager.prototype.load = function (url, defaults)
     {
     }
     var xhr = new THREE.XHRLoader();
-    xhr.load("json/sun.json", onload, progress, error);
+    xhr.load(url, onload, progress, error);
 }
 
 //parse loaded json file 
@@ -62,14 +63,10 @@ Package_Manager.prototype.load_resources = function (pack)
 {
     var self = this;
     //load textures
-    console.log("load resources");
     My_Lib.Texture_Manager.load_list_textures(pack.textures, function (){
         //load json descriptions files
-        console.log("particles ", self.pack.particles);                
-        My_Lib.Texture_Manager.load_list_json(pack.particles, function () {
-            if (self.data_loaded) {
-                self.data_loaded(self.pack);
-            }
-        })
-})
+                if (self.data_loaded) {
+                    self.data_loaded(pack);
+                }
+    })
 }

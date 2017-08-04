@@ -6,8 +6,13 @@ update - updated scene objects, animations, phisics
 render - control scene rendering
 this methods must rewrite on derived classes
 need set 
+PROPERTIES
 main_camera - camera which point of view render whole scene and user interacts
 dom_screen - dom element which contain canvas and display scene
+renderer - three.js renderer
+canvas - is created by three.js renderer, it have to append to dom_screen children, fuck it
+canvas width and height defining on creating it by renderer, fuck it
+
 
 
 */
@@ -111,6 +116,7 @@ Application.prototype._create_render = function (json)
     }
     //console.log("found dome element " + json.dom_element);
     this.dom_screen.appendChild(this.renderer.domElement);
+    this.canvas = this.renderer.domElement;
     
     
     this.renderer.setSize(json.viewport.width, json.viewport.height);
@@ -285,6 +291,7 @@ Application.prototype.update_all = function (delta)
 Application.prototype.update = function (delta)
 {
 	this.update_all(delta);
+    My_Lib.particle_manager.update(delta);
 }
 
 

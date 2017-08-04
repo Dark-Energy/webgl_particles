@@ -1,0 +1,214 @@
+{
+ "metadata": {
+  "version": 4.4,
+  "type": "Object",
+  "generator": "Object3D.toJSON"
+ },
+ "myanimations": {
+  "animations": {
+   "85701B30-3428-48CE-AC9F-E29E3D9D45D3": {
+    "uuid": "85701B30-3428-48CE-AC9F-E29E3D9D45D3",
+    "type": "Euler_Animation",
+    "time_scale": 1,
+    "xspeed": 0,
+    "yspeed": 1.0471975511965976,
+    "zspeed": 0
+   }
+  },
+  "bindings": [
+   {
+    "uuid": "598A0F69-8AB9-4C1B-ACEC-3FE29C86A91A",
+    "animations": [
+     "85701B30-3428-48CE-AC9F-E29E3D9D45D3"
+    ]
+   }
+  ],
+  "count": 1
+ },
+ "object": {
+  "version": 4.4,
+  "type": "Object",
+  "generator": "Object3D.toJSON"
+ },
+ "particles": [
+  {
+   "uuid": "B350B4B7-3228-4659-99C2-2CA91B8034EB",
+   "node": "BC44DEDE-9644-4776-BD24-32252B89754C",
+   "name": "cone1",
+   "params": {
+    "count": 300,
+    "size": 2,
+    "parent": "sun",
+    "pre_alpha": true,
+    "blending": "one_alpha",
+    "particle_lifetime": 1,
+    "color": {
+     "r": 1,
+     "g": 1,
+     "b": 0
+    },
+    "emitter": {
+     "name": "Cone_Emitter",
+     "params": {
+      "uuid": "0AF9ACE6-586F-4342-9C46-1B0E053A5325",
+      "emit_per_second": 100,
+      "lifetime": {
+       "min": 0,
+       "max": 1
+      },
+      "origin": {
+       "x": 5,
+       "y": 5,
+       "z": 0
+      },
+      "velocity": {
+       "x": 10,
+       "y": 10,
+       "z": 0
+      },
+      "dispersion": {
+       "min": 5,
+       "max": 10,
+       "delta": 5
+      },
+      "speed": {
+       "min": 20,
+       "max": 30,
+       "delta": 10
+      }
+     }
+    },
+    "affector": {
+     "name": "Force_Affector",
+     "params": {
+      "forces": [
+       {
+        "name": "Constant_Force",
+        "force": {
+         "x": 100,
+         "y": 0,
+         "z": 0
+        }
+       }
+      ]
+     }
+    },
+    "texture": "textures/particle2.png",
+    "no_fade_color": false,
+    "depth_test": true,
+    "depth_write": false
+   }
+  },
+  {
+   "uuid": "F965C917-CD1D-41F8-BF99-3BECC0B0415B",
+   "node": "DADA66BF-8197-41C1-AE0A-CE515E2D7CBC",
+   "name": "cone2",
+   "params": {
+    "count": 300,
+    "size": 2,
+    "parent": "sun",
+    "particle_lifetime": 1,
+    "color": {
+     "r": 1,
+     "g": 1,
+     "b": 0
+    },
+    "emitter": {
+     "name": "Cone_Emitter",
+     "params": {
+      "uuid": "504F5CCC-C065-4045-9C90-33A70737C3D2",
+      "emit_per_second": 100,
+      "lifetime": {
+       "min": 0,
+       "max": 1
+      },
+      "origin": {
+       "x": -5,
+       "y": 5,
+       "z": 0
+      },
+      "velocity": {
+       "x": -10,
+       "y": 10,
+       "z": 0
+      },
+      "dispersion": {
+       "min": 5,
+       "max": 10,
+       "delta": 5
+      },
+      "speed": {
+       "min": 20,
+       "max": 30,
+       "delta": 10
+      }
+     }
+    },
+    "affector": {
+     "name": "Particle_Affector",
+     "params": {}
+    },
+    "texture": "textures/particle2.png",
+    "no_fade_color": false,
+    "pre_alpha": true,
+    "depth_test": true,
+    "depth_write": false,
+    "blending": "one_alpha"
+   }
+  },
+  {
+   "uuid": "7C6EE6F3-1E18-40C8-A64D-80AD3A72B494",
+   "node": "822F97AA-C4EA-4D37-A34B-9E6596BFA16F",
+   "name": "star_dust",
+   "params": {
+    "bounding_sphere": 300,
+    "count": 300,
+    "size": 3,
+    "pre_alpha": true,
+    "blending": "one_alpha",
+    "color": {
+     "r": 1,
+     "g": 1,
+     "b": 1
+    },
+    "emitter": {
+     "name": "Star_Dust_Emitter",
+     "params": {
+      "uuid": "334D9FFE-F2BB-4A37-827E-62D747E19DAB",
+      "emit_per_second": 100,
+      "lifetime": {
+       "min": 0,
+       "max": 1
+      },
+      "velocity": {
+       "x": 0,
+       "y": 0,
+       "z": 150
+      },
+      "start_position": {
+       "x": -100,
+       "y": 100,
+       "z": -300
+      },
+      "end_position": {
+       "x": 100,
+       "y": -100,
+       "z": -300
+      }
+     }
+    },
+    "affector": {
+     "name": "Star_Dust_Affector",
+     "params": {
+      "end": 100
+     }
+    },
+    "texture": "textures/particle2.png",
+    "no_fade_color": true,
+    "particle_lifetime": 3,
+    "depth_test": true,
+    "depth_write": false
+   }
+  }
+ ]
+}

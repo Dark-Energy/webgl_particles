@@ -1,0 +1,394 @@
+{
+ "metadata": {
+  "version": 4.4,
+  "type": "Object",
+  "generator": "Object3D.toJSON"
+ },
+ "geometries": [
+  {
+   "uuid": "2085BE82-4923-4F3C-8B58-3049695C5040",
+   "type": "SphereGeometry",
+   "radius": 7,
+   "widthSegments": 20,
+   "heightSegments": 20
+  }
+ ],
+ "materials": [
+  {
+   "uuid": "5ED56127-440D-44B4-A66A-931AFAD1BC6D",
+   "type": "MeshBasicMaterial",
+   "color": 16750848,
+   "depthFunc": 3,
+   "depthTest": true,
+   "depthWrite": true,
+   "skinning": false,
+   "morphTargets": false,
+   "dithering": false
+  }
+ ],
+ "object": {
+  "uuid": "B5FF3B3E-C8F6-40E9-A455-26371946A6C0",
+  "type": "Scene",
+  "matrix": [
+   1,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   1
+  ],
+  "children": [
+   {
+    "uuid": "DC408129-4991-4674-8765-0D736899DE5D",
+    "type": "PerspectiveCamera",
+    "name": "main_camera",
+    "matrix": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     10,
+     1
+    ]
+   },
+   {
+    "uuid": "89D463E7-9914-4538-8EA9-C4465FF27A18",
+    "type": "PointLight",
+    "matrix": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     10,
+     300,
+     200,
+     1
+    ]
+   },
+   {
+    "uuid": "690FBA8B-58B0-4158-8D12-8F48C1D9528E",
+    "type": "Mesh",
+    "name": "sun",
+    "matrix": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     -100,
+     1
+    ],
+    "geometry": "2085BE82-4923-4F3C-8B58-3049695C5040",
+    "material": "5ED56127-440D-44B4-A66A-931AFAD1BC6D",
+    "children": [
+     {
+      "uuid": "F588B3E7-191C-4509-8BAA-08C1166F5F9A",
+      "type": "particles_points",
+      "matrix": [
+       1,
+       0,
+       0,
+       0,
+       0,
+       1,
+       0,
+       0,
+       0,
+       0,
+       1,
+       0,
+       0,
+       0,
+       0,
+       1
+      ]
+     },
+     {
+      "uuid": "BAE8FD40-4678-4B52-B3D4-603950AC4CF9",
+      "type": "particles_points",
+      "matrix": [
+       1,
+       0,
+       0,
+       0,
+       0,
+       1,
+       0,
+       0,
+       0,
+       0,
+       1,
+       0,
+       0,
+       0,
+       0,
+       1
+      ]
+     }
+    ]
+   },
+   {
+    "uuid": "0DD83A70-4C5E-4669-81B5-7A4CAEA01C14",
+    "type": "Object3D",
+    "matrix": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "uuid": "1EE1D4BF-D8D7-43F5-845C-D95FA7615333",
+    "type": "particles_points",
+    "matrix": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     1
+    ]
+   }
+  ]
+ },
+ "particles": [
+  {
+   "uuid": "EBB3DEEA-70B8-48E3-8C0D-951B1CEBC06E",
+   "node": "F588B3E7-191C-4509-8BAA-08C1166F5F9A",
+   "name": "cone1",
+   "params": {
+    "count": 300,
+    "size": 2,
+    "parent": "sun",
+    "pre_alpha": true,
+    "blending": "one_alpha",
+    "particle_lifetime": 1,
+    "color": {
+     "r": 1,
+     "g": 1,
+     "b": 0
+    },
+    "emitter": {
+     "name": "Cone_Emitter",
+     "params": {
+      "uuid": "7F52D2EA-54E3-4BA1-8A7C-CFF085D643D2",
+      "emit_per_second": 100,
+      "lifetime": {
+       "min": 0,
+       "max": 1
+      },
+      "origin": {
+       "x": 5,
+       "y": 5,
+       "z": 0
+      },
+      "velocity": {
+       "x": 10,
+       "y": 10,
+       "z": 0
+      },
+      "dispersion": {
+       "min": 5,
+       "max": 10,
+       "delta": 5
+      },
+      "speed": {
+       "min": 20,
+       "max": 30,
+       "delta": 10
+      }
+     }
+    },
+    "affector": {
+     "name": "Force_Affector",
+     "params": {
+      "forces": [
+       {
+        "name": "Constant_Force",
+        "force": {
+         "x": 100,
+         "y": 0,
+         "z": 0
+        }
+       }
+      ]
+     }
+    },
+    "texture": "textures/particle2.png",
+    "no_fade_color": false,
+    "depth_test": true,
+    "depth_write": false
+   }
+  },
+  {
+   "uuid": "162F8BD9-4EDE-4F25-87DD-66311F4C9D28",
+   "node": "BAE8FD40-4678-4B52-B3D4-603950AC4CF9",
+   "name": "cone2",
+   "params": {
+    "count": 300,
+    "size": 2,
+    "parent": "sun",
+    "particle_lifetime": 1,
+    "color": {
+     "r": 1,
+     "g": 1,
+     "b": 0
+    },
+    "emitter": {
+     "name": "Cone_Emitter",
+     "params": {
+      "uuid": "B890DCF7-E2FF-46B4-A939-D836B706AF95",
+      "emit_per_second": 100,
+      "lifetime": {
+       "min": 0,
+       "max": 1
+      },
+      "origin": {
+       "x": -5,
+       "y": 5,
+       "z": 0
+      },
+      "velocity": {
+       "x": -10,
+       "y": 10,
+       "z": 0
+      },
+      "dispersion": {
+       "min": 5,
+       "max": 10,
+       "delta": 5
+      },
+      "speed": {
+       "min": 20,
+       "max": 30,
+       "delta": 10
+      }
+     }
+    },
+    "affector": {
+     "name": "Particle_Affector",
+     "params": {}
+    },
+    "texture": "textures/particle2.png",
+    "no_fade_color": false,
+    "pre_alpha": true,
+    "depth_test": true,
+    "depth_write": false,
+    "blending": "one_alpha"
+   }
+  },
+  {
+   "uuid": "BC3F686F-2EFB-4A91-937C-8E06522E6FD1",
+   "node": "1EE1D4BF-D8D7-43F5-845C-D95FA7615333",
+   "name": "star_dust",
+   "params": {
+    "bounding_sphere": 300,
+    "count": 300,
+    "size": 3,
+    "pre_alpha": true,
+    "blending": "one_alpha",
+    "color": {
+     "r": 1,
+     "g": 1,
+     "b": 1
+    },
+    "emitter": {
+     "name": "Star_Dust_Emitter",
+     "params": {
+      "uuid": "FC588377-F9C3-45EF-935B-30538C0D0207",
+      "emit_per_second": 100,
+      "lifetime": {
+       "min": 0,
+       "max": 1
+      },
+      "velocity": {
+       "x": 0,
+       "y": 0,
+       "z": 150
+      },
+      "start_position": {
+       "x": -100,
+       "y": 100,
+       "z": -300
+      },
+      "end_position": {
+       "x": 100,
+       "y": -100,
+       "z": -300
+      }
+     }
+    },
+    "affector": {
+     "name": "Star_Dust_Affector",
+     "params": {
+      "end": 100
+     }
+    },
+    "texture": "textures/particle2.png",
+    "no_fade_color": true,
+    "particle_lifetime": 3,
+    "depth_test": true,
+    "depth_write": false
+   }
+  }
+ ]
+}

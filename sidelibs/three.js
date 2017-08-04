@@ -1068,9 +1068,8 @@
 		},
 
 		toJSON: function ( meta ) {
-
 			if ( meta.textures[ this.uuid ] !== undefined ) {
-
+                console.log("meta ", this.uuid);
 				return meta.textures[ this.uuid ];
 
 			}
@@ -1155,6 +1154,7 @@
 
 			meta.textures[ this.uuid ] = output;
 
+            console.log("texture", meta);
 			return output;
 
 		},
@@ -7283,7 +7283,6 @@
 			if ( this.shininess !== undefined ) data.shininess = this.shininess;
 			if ( this.clearCoat !== undefined ) data.clearCoat = this.clearCoat;
 			if ( this.clearCoatRoughness !== undefined ) data.clearCoatRoughness = this.clearCoatRoughness;
-
 			if ( this.map && this.map.isTexture ) data.map = this.map.toJSON( meta ).uuid;
 			if ( this.alphaMap && this.alphaMap.isTexture ) data.alphaMap = this.alphaMap.toJSON( meta ).uuid;
 			if ( this.lightMap && this.lightMap.isTexture ) data.lightMap = this.lightMap.toJSON( meta ).uuid;
@@ -34249,7 +34248,6 @@
 					return materials[ name ];
 
 				}
-
 				switch ( data.type ) {
 
 					case 'Scene':

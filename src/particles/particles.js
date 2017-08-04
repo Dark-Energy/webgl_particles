@@ -1,35 +1,30 @@
 
 My_Lib.Particle_System = function (params)
 {
+    this.uuid = _.generateUUID();    
+
+    //restricted params
+	if (!params.emitter) {
+		params.emitter = new My_Lib.Particle_Emitter(1);
+	}
+	if (!params.affector) {
+		params.affector = new My_Lib.Particle_Affector();
+	}
+    params.no_fade_color = !!params.no_fade_color;    
+    params.particle_lifetime = params.particle_lifetime || 3.0;
     
-	this.emitter = params.emitter;
-	if (!this.emitter) {
-		this.emitter = new My_Lib.Particle_Emitter(1);
-	}
-	this.affector = params.affector;
-	if (!this.affector) {
-		this.affector = new My_Lib.Particle_Affector();
-	}
-    
-    this.particle_lifetime = params.particle_lifetime = params.particle_lifetime || 3.0;
-	
-	
-	this.params = params;
-    params.no_fade_color = !!params.no_fade_color;
-    
-	if (typeof this.params.pre_alpha === 'undefined'){
-		this.params.pre_alpha = true;
+	if (typeof params.pre_alpha === 'undefined') {
+		params.pre_alpha = true;
 	}
 	
-	if (typeof this.params.depth_test === 'undefined'){
-		this.params.depth_test = true;
+	if (typeof params.depth_test === 'undefined') {
+		params.depth_test = true;
 	}
 	
-	if (typeof this.params.depth_write === 'undefined'){
-		this.params.depth_write = false;
+	if (params["depth_write"] === undefined){
+		params.depth_write = false;
 	}
-    
-	
+
 	if (!params.color) {
 		params.color  = {"r":1, "g":1, "b":1};
 	}
@@ -37,23 +32,40 @@ My_Lib.Particle_System = function (params)
     if (!params.blending) {
         params.blending = "one_alpha";
     }
+
+    params.size = params.size || 1;
+    
+    if (!params.count) params.count = 100;
+
+    
+	this.emitter = params.emitter;
+	this.affector = params.affector;    
+    this.name = params.name || '';
+    this.particle_lifetime = params.particle_lifetime;
+	this.params = params;
+
     
     this.texture = params.texture;
 	
-	this.dynamic_color = (params.end_color || params.random_color);
+	this.dynamic_color = (!!params.end_color || !!params.random_color);
 
-    params.size = params.size || 1;
-	var count = params.count || 100;
+
+	var count = params.count;
 	
 	this.material = this.create_particle_material();
 	this.node = new Particles_Points(this.create_particle_geometry(count), this.material);
+    this.node.name = this.name;
 
     if (typeof this.params.bounding_sphere !== 'undefined') {
         this.node.boundingSphere.radius = params.bounding_sphere;
     }
 }
 
-
+My_Lib.Particle_System.prototype.set_name = function (name)
+{
+    this.name = name;
+    this.node.name = name;
+}
 
 My_Lib.Particle_System.prototype.suicide = function ()
 {
@@ -61,10 +73,6 @@ My_Lib.Particle_System.prototype.suicide = function ()
     My_Lib.event_hub.emit("kill_me", this);
 }
 
-
-My_Lib.Particle_System.prototype.create = function (count, size)
-{
-}
 
 My_Lib.Particle_System.prototype.create_particle_data = function (count)
 {
@@ -176,10 +184,12 @@ My_Lib.Particle_System.prototype.set_texture = function (texture)
 	} else {
         console.error("Oh Shit! texture in set_texture is not string! it's object or undefined!", texture);
     }
-    
+
     if (this.material.uniforms.sprite) {
         this.material.uniforms.sprite.value = this.texture;
     } else {
+        //this.material.uniforms.sprite = {value: texture};
+        this.recreate_material();
         console.error("Oh Shit! Our shader has not texture! Need create shader with texture!");
     }
 }
@@ -189,9 +199,6 @@ My_Lib.Particle_System.prototype.create_uniforms = function ()
 {
     var uniforms = 
     {
-        "sprite": {
-            value: this.texture
-        },
         "lifetime": {
             value: this.particle_lifetime
         },
@@ -202,7 +209,11 @@ My_Lib.Particle_System.prototype.create_uniforms = function ()
             value: new THREE.Vector2(My_Lib.Viewport.width, My_Lib.Viewport.height)
         }
     };
-    
+    if (!!this.texture) {
+        uniforms["sprite"] = {
+            value: this.texture
+        }
+    };
     if (!this.dynamic_color) {
         uniforms["particle_color"] = {value: this.params.color};
     }
@@ -261,12 +272,17 @@ My_Lib.Particle_System.prototype.create_particle_material = function()
 	return mat;
 }
 
+My_Lib.Particle_System.prototype.recreate_material = function ()
+{
+    this.node.material = this.material = this.create_particle_material();
+}
+
 
 My_Lib.Particle_System.prototype.set_pre_alpha = function (pre_alpha)
 {
     if (this.params.pre_alpha !== !!pre_alpha) {
         this.params.pre_alpha = pre_alpha;
-        this.node.material = this.material = this.create_particle_material();
+        this.recreate_material();
     }
 }
 
@@ -363,7 +379,11 @@ My_Lib.Particle_System.prototype.update = function (dt)
 My_Lib.Particle_System.prototype.toJSON = function ()
 {
 	var data = {};
-	data.name = "test";
+    data.uuid = this.uuid;
+    data.node = this.node.uuid;
+    if (this.name || this.node.name) {
+        data.name = this.name || this.node.name;
+    }
 	data.params = {};
 	if (this.params) {
 		_.copy_object(data.params, this.params);

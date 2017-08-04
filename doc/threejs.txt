@@ -13,3 +13,40 @@ This is done in "threejs_patches.js" module.
 BuG
 
 When saved "toJSON", then saved some variable "matrix", which contain garbage. Need forced update world Matrix
+
+
+
+
+
+There is problem
+THREE.ShaderMaterial.prototype.toJSON = function ( meta)
+{
+	var data = THREE.Material.prototype.toJSON.call( this, meta );
+
+    function uniforms_to_json(uniforms)
+    {
+        var shit = {};
+        var meta = {textures: [], images: []};
+       for(var key in uniforms) {
+            if (Object.prototype.hasOwnProperty.call(uniforms, key))
+            {
+                if (uniforms[key] !== undefined && uniforms[key].value.image !== undefined) {
+                    if (!uniforms[key].value.toJSON) {
+                        console.error(key + " is not have tojson");
+                    }
+                    shit[key] = uniforms[key].value.toJSON(meta);
+                    console.log("to json convert", key, meta, shit[key]);                    
+                }
+                shit[key] = uniforms[key];
+                console.log(shit[key]);
+            }
+       }
+    }
+    data.uniforms = uniforms_to_json(this.uniforms);
+	//data.uniforms = this.uniforms;
+	data.vertexShader = this.vertexShader;
+	data.fragmentShader = this.fragmentShader;
+
+	return data; 
+}
+

@@ -42,7 +42,7 @@ _.copy_object(Particle_Forces.Constant_Force.prototype, {
 	{
 		var data = {};
 		data.name = "Constant_Force";
-		data.force = My_Lib.create_clone_object(this.force);
+		data.force = _.create_clone_object(this.force);
 		return data;
 	},
 	parse: function (json)

@@ -103,6 +103,39 @@ My_Lib.generateUUID = function() {
         }
         return uuid.join( '' );
 	} 
+    
+My_Lib.clone_array = function(src)
+{
+    var r = new Array(src.length);
+    for(var i = 0; i < src.length; i++) {
+        r[i] = src[i];
+    }
+    return r;
+}
+
+
+My_Lib.get_first_key = function(obj)
+{
+	for(var key in obj) {
+		if (obj.hasOwnProperty(key)) {
+			return key;
+		}
+	}
+}
+
+
+My_Lib.travers_scene = function(root, func)
+{
+    function recursive(root) 
+    {
+        func(root);
+        for(var i = 0; i < root.children.length; i++) {
+            recursive(root.children[i]);
+        }
+    }
+    
+    recursive(root);
+}
 
 
 }) (_);

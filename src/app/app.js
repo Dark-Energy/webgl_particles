@@ -1,6 +1,4 @@
 ﻿
-function init()
-{
 
 	var my_app = {};
 
@@ -13,11 +11,6 @@ function init()
                     "textures/particle1.png",
                     "textures/Particle4.jpg",
                     "textures/spark.png",
-            ],
-            "particles": [
-                "json/cone_particles1.json",
-                "json/cone_particles2.json",
-                "json/star_dust.json",
             ]
            };
            return data;
@@ -27,108 +20,128 @@ function init()
 
     my_app.resources_loaded = function (data)
     {
-          	this.resource_list = data.textures;
-            var json_list = data.particles;
-
-            var self = this;            
-               self.create_sun();
-               self.init_ui();
-               self.loop();
+        this.resource_list = data.textures;
+        this.load_scene();        
+        this.loop();
     }
     
     my_app.load_res = function ()
     {
         var pm = new Package_Manager();
         var self = this;
-        pm.data_loaded =  function (data) { self.resources_loaded(data)};
-        pm.load("json/sun.json", this.create_default_data());
+        pm.data_loaded =  function (data) { 
+            self.resources_loaded(data)
+        };
+        pm.load("json/package_sun.json", this.create_default_data());
     }
     
-
-	my_app.create_sun = function ()
-	{
-		var pointLight = new THREE.PointLight(0xFFFF00);
-		pointLight.position.set(10, 300, 200);
-		this.main_scene.add(pointLight);
-		
-		var sg = new THREE.SphereGeometry(7, 20, 20);
-		var sm = new THREE.MeshBasicMaterial({color: 0xFF9900});
-		var sphere = new THREE.Mesh(sg, sm);
-		sphere.name = "sun";
-		sphere.position.z = -100;
-		this.main_scene.add(sphere);
-		this.main_camera.lookAt(sphere.position);	
-		this.main_camera.position.z = 10;
-		
-		//var contr = new My_Lib.Euler_Controller(sphere, 0, 60,0);
-		//this.add_animated_object(contr);
-        
-        var contr = new Euler_Animation(0, 60,0);
-        sphere.add_animation(contr);
-
-		
-		var self = this;
-
-        /*var t = this.main_scene.getObjectByName("sun");
-        sphere.updateMatrixWorld();
-        console.log(sphere.matrixWorld);
-        console.log(JSON.stringify(this.main_scene.toJSON(), null, '   '));
-            */
-        
-		var shit = new THREE.Object3D();
-		shit.position.set(0, 0, 0);
-		this.main_scene.add(shit);
-		
-		var self = this;
-		function add_particles(name) 
-		{
-			var json = My_Lib.Texture_Manager.get(name);
-			var ps = My_Lib.particle_manager.fromJSON(json, function(){},self.main_scene, name);
-			self.add_animated_object(ps);
-		}
-		add_particles("json/cone_particles1.json");
-		add_particles("json/cone_particles2.json");
-		add_particles("json/star_dust.json");
-		
-	}
-
-	my_app.init_ui = function ()
-	{
-		this.control_panel = new Control_Panel();
-		this.control_panel.add_particles( My_Lib.particle_manager.get_particle_names() );
-        
-        this.control_panel.set_textures(this.resource_list);
-
-	}
+    my_app.load_scene = function ()
+    {
+        var self = this;
+        this.ser = new Scene_Serializer();                
+        this.ser.scene_loaded = function (scene)
+        {
+            self.main_scene = scene;
+            self.main_camera = scene.getObjectByName("main_camera");
+            self.init_ui();                        
+        }
+        this.ser.load_from_json("json/scene.json");
+    }
+    
 
     my_app.created = function () 
     {
         var self = this;
         this.load_res();
-        
-        this.dom_screen.addEventListener("click", function (event) {
-            var ray = Mouse_Intersector.mouse_coords_to_ray(self.dom_screen, event, self.main_camera);
-            var intersects = ray.intersectObjects( [self.main_scene], true ); 
-            console.log(intersects);
-        });
     }
 
     my_app.update = function (dt)
     {
         Application.prototype.update.call(this, dt);
-        //console.log(this.main_scene.update);
         this.main_scene.update(dt);
     }
     
+	my_app.init_ui = function ()
+	{
+		this.control_panel = new Control_Panel();
+		this.control_panel.add_particles( My_Lib.particle_manager.get_particle_names() );
+        this.control_panel.set_textures(this.resource_list);
+        
+        this.create_mouse_listener();
+        
+	}
+    
+    my_app.create_line = function (a, b)
+    {
+       
+        var points = new Float32Array([ a.x, a.y, a.z, a.x+b.x, a.y+b.y, a.z+b.z]); 
+        //console.log("points ", points);
+        var vertices = new THREE.BufferAttribute(points, 3).setDynamic(true);        
+        var geom = new THREE.BufferGeometry(); 	
+        geom.addAttribute('position', vertices);
+        
+        var line = new THREE.Line(geom, new THREE.LineBasicMaterial);
+        this.main_scene.add(line);
+     }
+
+     
+     
+    my_app.find_vector_scene_intersections = function(vector)
+    {
+        vector.unproject(this.main_camera);
+        var ray = new THREE.Raycaster( this.main_camera.position, vector.sub( this.main_camera.position ).normalize() );
+            // create an array containing all objects in the scene with which the ray intersects
+			//var intersects = ray.intersectObjects( [grid_text.root], true ); 
+			//console.log(fake_plane.root.children[0].geometry);
+			var intersects = ray.intersectObjects( [this.main_scene], true ); 
+			console.log(intersects);
+	}
+  
+     
+    my_app.create_mouse_listener = function ()
+    {
+    
+        var self = this;
+        document.addEventListener("click", function (event) {
+            var vector = Mouse_Intersector.mouse_coords_to_vector(self.dom_screen, event);
+            //var intersects = ray.intersectObjects( [self.main_scene], true ); 
+            self.find_vector_scene_intersections(vector);
+        });
+        /*
+        var onMouseDownPosition = {};
+        this.dom_screen.addEventListener("mousedown", function (event) {
+            self.mouseDown = true;
+            onMouseDownPosition.x = event.clientX;
+            onMouseDownPosition.y = event.clientY;
+            
+        });
+        
+       this.dom_screen.addEventListener("mouseup", function (event) {
+            self.mouseDown = false;
+        });
+
+          this.dom_screen.addEventListener("mousemove", function (event) {
+             if ( self.mouseDown ) {
+                theta = - ( ( event.clientX - onMouseDownPosition.x ) * 0.5 )
+                        + onMouseDownTheta;
+                phi = ( ( event.clientY - onMouseDownPosition.y ) * 0.5 )
+                      + onMouseDownPhi;
+
+                phi = Math.min( 180, Math.max( 0, phi ) );
+
+                var camera = self.main_camera;
+                camera.position.x = radious * Math.sin( theta * Math.PI / 360 )
+                                    * Math.cos( phi * Math.PI / 360 );
+                camera.position.y = radious * Math.sin( phi * Math.PI / 360 );
+                camera.position.z = radious * Math.cos( theta * Math.PI / 360 )
+                                    * Math.cos( phi * Math.PI / 360 );
+                camera.updateMatrix();
+            }
+        });
+        */
+    }
+
 	
-	var Particles_Demo = Application.extend(my_app);
-    var app = new Particles_Demo();
-    
-    //app.start("json/configuraton.json");
-    app.start();
-    
-   
-}
-
-
-init();
+var Editor_Class = Application.extend(my_app);
+var Editor = new Editor_Class();
+Editor.start();

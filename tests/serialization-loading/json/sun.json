@@ -1,0 +1,9 @@
+{
+    "name": "sun scene",
+    "textures": [
+			"textures/particle2.png",
+			"textures/particle1.png",
+            "textures/Particle4.jpg",
+            "textures/spark.png"
+    ]
+}

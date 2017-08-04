@@ -111,7 +111,7 @@ editor.Particles_Props =
     watch: {
         params: function ()
         {
-            console.log("change ", this.params.id);
+            //console.log("change ", this.params.id);
         }
     },
     methods: {

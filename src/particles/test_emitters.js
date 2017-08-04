@@ -19,7 +19,7 @@ Cone_Emitter.prototype.toJSON = function ()
 	var data = {};
 	data.name = "Cone_Emitter";
 	data.params = My_Lib.Particle_Emitter.prototype.toJSON.call(this, this);
-	My_Lib.clone_field_list_one_level_recursion(this, data.params, 
+	_.clone_field_list_one_level_recursion(this, data.params, 
 	["origin", 
 	"velocity", 
 	"dispersion",
@@ -154,7 +154,7 @@ _.copy_object( Star_Dust_Emitter.prototype,{
 	toJSON: function ()
 	{
 		var params = My_Lib.Particle_Emitter.prototype.toJSON.call(this, this);
-		My_Lib.clone_field_list_one_level_recursion(this, params, ["velocity", 
+		_.clone_field_list_one_level_recursion(this, params, ["velocity", 
 		"start_position",
 		"end_position"])
 		var data = {

@@ -1,25 +1,6 @@
 
 var event_hub;
 
-/*
-var texture_type_to_string = [];
-var ttt = texture_type_to_string;
-    ttt[THREE.ByteType] = "ByteType";
-    ttt[THREE.UnsignedByteType] = "UnsignedByteType";
-    ttt[THREE.ShortType] = "ShortType";
-    ttt[THREE.UnsignedShortType] = "UnsignedShortType";
-    ttt[THREE.IntType] = "IntType";
-    THREE.UnsignedIntType: "UnsignedIntType",
-    THREE.FloatType: "FloatType",
-    THREE.HalfFloatType: "HalfFloatType",
-    THREE.UnsignedShort4444Type: "UnsignedShort4444Type",
-    THREE.UnsignedShort5551Type: "UnsignedShort5551Type",
-    THREE.UnsignedShort565Type: "UnsignedShort565Type",
-    THREE.UnsignedInt248Type: "UnsignedInt248Type",
-}
-*/
-
-
 var Control_Panel = (function ()
 {
 
@@ -35,6 +16,7 @@ Control_Panel = function ()
     event_hub.$on("change_color", this.change_particles_color.bind(this));
     event_hub.$on("change_params", this.change_some_params.bind(this));
     event_hub.$on("select_texture", this.set_texture.bind(this));
+    event_hub.$on("create_particles", this.create_particles.bind(this));
 }
 
 
@@ -60,9 +42,10 @@ var methods = {
         return selected_texture;
     },
     get_particle_params : function (id) {
+        console.log("get params ", id);
         var ps = My_Lib.particle_manager.particles[id];
         if (!ps) {
-            console.error("ERROR! particles " + this.selected + "not found!");    
+            console.error("ERROR! particles '" + id + "' not found!");    
             return {};
         }
         var color = ps.params.color;
@@ -193,6 +176,17 @@ Control_Panel.prototype.set_textures = function (textures)
     for(var i =0; i < textures.length; i++) {
         this.app.textures.push(textures[i]);
     }
+}
+
+Control_Panel.prototype.create_particles = function ()
+{
+    var ps = My_Lib.particle_manager.create_new();
+    ps.node.position.set(5, 0, -5);
+    //this.app.particles.push( ps.name );    
+    Editor.main_scene.add(ps.node);
+    
+    //var params = event_hub.get_particles_params(ps.node.name);
+    event_hub.$emit("adding_particles", ps.node.name);
 }
 
 

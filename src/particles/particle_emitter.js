@@ -2,12 +2,13 @@
 //Base class for Particle Emitters
 My_Lib.Particle_Emitter = function (emit_per_second)
 {
+    this.uuid = _.generateUUID();
+    this.name = '';
 	this.emit_delta = 0;
 	this.emit_count = 0;
 	this.emit_per_second = emit_per_second || 5;
 	//linear interpolation = min + random * (max-min)	
 	this.lifetime = {"min": 0, "max":2.0};
-    //this.velocity = {x: 0, y: 1, z: 0};
 }
 
 My_Lib.Particle_Emitter.prototype.emit_life = function ()
@@ -44,12 +45,16 @@ My_Lib.Particle_Emitter.prototype.emit = function (p, c, matrix)
 My_Lib.Particle_Emitter.prototype.toJSON = function (child)
 {
 	var params = {
+        "uuid": this.uuid,
 		"emit_per_second": this.emit_per_second,
 		"lifetime": {
 			"min": this.lifetime.min,
 			"max": this.lifetime.max
 		},
 	};
+    if (this.name) {
+        params.name = this.name;
+    }
 	if (child) {
 		return params;
 	}
@@ -62,6 +67,8 @@ My_Lib.Particle_Emitter.prototype.toJSON = function (child)
 My_Lib.Particle_Emitter.prototype.parse = function (data)
 {
 	this.emit_per_second = data.emit_per_second;
+    this.name = data.name;
+    this.uuid = data.uuid || _.generateUUID();
 	_.copy_object(this.lifetime, data.lifetime);
 }
 

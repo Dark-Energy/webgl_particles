@@ -1,0 +1,49 @@
+{
+    "name": "star_dust",
+    "params": {
+        "bounding_sphere": 300,
+        "count": 300,
+        "size": 3,
+		"pre_alpha": true,		
+		"blending": "one_alpha",		
+                "color": {
+					"r": 1,
+					"g": 1,
+					"b": 1
+				},
+		
+        "emitter": {
+            "name": "Star_Dust_Emitter",
+            "params": {
+                "emit_per_second": 100,
+                "lifetime": {
+                    "min": 0,
+                    "max": 1
+                },
+                "velocity": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 150
+                },
+                "start_position": {
+                    "x": -100,
+                    "y": 100,
+                    "z": -300
+                },
+                "end_position": {
+                    "x": 100,
+                    "y": -100,
+                    "z": -300
+                }
+            }
+        },
+        "affector": {
+            "name": "Star_Dust_Affector",
+            "params": {
+                "end": 100
+            }
+        },
+        "texture": "textures/particle2.png",
+        "no_fade_color": true
+    }
+}
