@@ -1,10 +1,18 @@
-Custom_Affector = function ()
+import {My_Lib} from '../base/my_lib.js';
+import {Particle_Affector} from './particle_affector.js';
+
+function Custom_Affector()
 {
-	My_Lib.Particle_Affector.apply(this, arguments);
+	Particle_Affector.apply(this, arguments);
     this.custom_func = function dummy () {return true;};
 }
 
-My_Lib.create_class(My_Lib.Particle_Affector, Custom_Affector, {
+
+Custom_Affector.prototype = Object.create(Particle_Affector.prototype);
+
+_.copy_object(Custom_Affector.prototype, 
+    {
+    constructor: Custom_Affector,
    	affect: function (dt, pdata, vert)
 	{
         return this.custom_func(dt, p, vert);
@@ -48,4 +56,8 @@ My_Lib.create_class(My_Lib.Particle_Affector, Custom_Affector, {
 		this.set_affect_func(json.source_code);
 	}
 
-}, "Custom_Affector");
+});
+
+My_Lib.Register_Class("Custom_Affector", Custom_Affector);
+
+export {Custom_Affector};

@@ -1,3 +1,5 @@
+import {My_Lib} from '../base/my_lib.js';
+
 var Particle_Forces = {};
 
 //base class
@@ -54,3 +56,5 @@ _.copy_object(Particle_Forces.Constant_Force.prototype, {
 });
 
 My_Lib.Register_Class("Constant_Force", Particle_Forces.Constant_Force);
+
+export {Particle_Forces};

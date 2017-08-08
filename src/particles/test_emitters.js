@@ -1,6 +1,11 @@
-var Cone_Emitter = function ()
+import {My_Lib} from '../base/my_lib.js';
+import {Point_Generators} from './point_generators.js';
+import {Particle_Emitter} from './particle_emitter.js';
+import {Particle_Affector} from './particle_affector.js';
+
+function  Cone_Emitter()
 {
-	My_Lib.Particle_Emitter.apply(this, arguments);
+	Particle_Emitter.apply(this, arguments);
 	this.generator = new Point_Generators.Random_Direction();
 	this.origin = new THREE.Vector3(1, 1, 0);
 	this.velocity = new THREE.Vector3(0, 1, 0);
@@ -10,7 +15,7 @@ var Cone_Emitter = function ()
 	this.color = new THREE.Color(1, 1, 1);
 }
 
-Cone_Emitter.prototype = Object.create(My_Lib.Particle_Emitter.prototype);
+Cone_Emitter.prototype = Object.create(Particle_Emitter.prototype);
 Cone_Emitter.prototype.constructor = Cone_Emitter;
 My_Lib.Register_Class("Cone_Emitter", Cone_Emitter);
 
@@ -18,7 +23,7 @@ Cone_Emitter.prototype.toJSON = function ()
 {
 	var data = {};
 	data.name = "Cone_Emitter";
-	data.params = My_Lib.Particle_Emitter.prototype.toJSON.call(this, this);
+	data.params = Particle_Emitter.prototype.toJSON.call(this, this);
 	_.clone_field_list_one_level_recursion(this, data.params, 
 	["origin", 
 	"velocity", 
@@ -30,7 +35,7 @@ Cone_Emitter.prototype.toJSON = function ()
 
 Cone_Emitter.prototype.parse = function (data)
 {
-	My_Lib.Particle_Emitter.prototype.parse.call(this, data);
+	Particle_Emitter.prototype.parse.call(this, data);
 	this.origin.copy(data.origin);
 	this.velocity.copy(data.velocity);
 	this.set_dispersion(data.dispersion.min, data.dispersion.max);
@@ -63,12 +68,6 @@ Cone_Emitter.prototype.emit = function (p, color, matrix)
 	p.velocity.multiplyScalar(Math.random()*this.dispersion.delta + this.dispersion.min);	
 	p.velocity.add(this.velocity).normalize();
 	
-    
-	/*if (this.parent) {
-		this.parent.localToWorld(p.position);
-		p.velocity.applyMatrix4_rotation(this.parent.matrixWorld);
-	}*/
-    
     if (matrix) {
         p.position.applyMatrix4(matrix);
         p.velocity.applyMatrix4_rotation(matrix);
@@ -88,15 +87,15 @@ Cone_Emitter.prototype.emit_color = function (color)
 	color.copy(this.color);
 }
 
-Sphere_Emitter = function (radius)
+function Sphere_Emitter(radius)
 {
-	My_Lib.Particle_Emitter.call(this);
+	Particle_Emitter.call(this);
 	this.radius = radius;
 	this.generator = new Point_Generators.Sphere(radius);
 }
 
-Sphere_Emitter.prototype = Object.create(My_Lib.Particle_Emitter.prototype);
-Sphere_Emitter.prototype.constructor = My_Lib.Sphere_Emitter;
+Sphere_Emitter.prototype = Object.create(Particle_Emitter.prototype);
+Sphere_Emitter.prototype.constructor = Sphere_Emitter;
 
 
 Sphere_Emitter.prototype.emit = function (p)
@@ -110,14 +109,14 @@ Sphere_Emitter.prototype.emit = function (p)
 
 function Star_Dust_Emitter ()
 {
-	My_Lib.Particle_Emitter.apply(this, arguments);
+	Particle_Emitter.apply(this, arguments);
 	this.start_position = new THREE.Vector3(0, 0, 0);
 	this.end_position = new THREE.Vector3(1, 1, 1);
 	this.delta = new THREE.Vector3(1, 1, 1);	
 	this.velocity = new THREE.Vector3(0, 0, 1);
 }
 
-Star_Dust_Emitter.prototype = Object.create(My_Lib.Particle_Emitter.prototype);
+Star_Dust_Emitter.prototype = Object.create(Particle_Emitter.prototype);
 Star_Dust_Emitter.prototype.constructor = Star_Dust_Emitter;
 _.copy_object( Star_Dust_Emitter.prototype,{
 	set_velocity: function (x,y, z) 
@@ -153,7 +152,7 @@ _.copy_object( Star_Dust_Emitter.prototype,{
 	},
 	toJSON: function ()
 	{
-		var params = My_Lib.Particle_Emitter.prototype.toJSON.call(this, this);
+		var params = Particle_Emitter.prototype.toJSON.call(this, this);
 		_.clone_field_list_one_level_recursion(this, params, ["velocity", 
 		"start_position",
 		"end_position"])
@@ -165,7 +164,7 @@ _.copy_object( Star_Dust_Emitter.prototype,{
 	},
 	parse: function (json)
 	{
-		My_Lib.Particle_Emitter.prototype.parse.call(this, json);
+		Particle_Emitter.prototype.parse.call(this, json);
 		this.set_position_range(json.start_position, json.end_position);
 		this.velocity.copy(json.velocity);
 	}
@@ -181,7 +180,7 @@ function Star_Dust_Affector (end)
 }
 
 
-Star_Dust_Affector.prototype = Object.create(My_Lib.Particle_Affector.prototype);
+Star_Dust_Affector.prototype = Object.create(Particle_Affector.prototype);
 Star_Dust_Affector.prototype.constructor = Star_Dust_Affector;
 
 _.copy_object(Star_Dust_Affector.prototype,{
@@ -194,7 +193,7 @@ _.copy_object(Star_Dust_Affector.prototype,{
 	},
 	toJSON: function ()
 	{
-		var params = My_Lib.Particle_Affector.prototype.toJSON.call(this, this);
+		var params = Particle_Affector.prototype.toJSON.call(this, this);
 		params["end"] = this.end;
 		var data = {
 			"name": "Star_Dust_Affector",
@@ -205,9 +204,11 @@ _.copy_object(Star_Dust_Affector.prototype,{
 	},
 	parse: function (json)
 	{
-		My_Lib.Particle_Affector.prototype.parse(this, json);
+		Particle_Affector.prototype.parse(this, json);
 		this.end = json.end;
 	}
 });
 
 My_Lib.Register_Class("Star_Dust_Affector", Star_Dust_Affector);
+
+export {Cone_Emitter, Star_Dust_Emitter, Sphere_Emitter, Star_Dust_Affector};

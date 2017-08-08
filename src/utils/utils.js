@@ -13,6 +13,7 @@ function get_old_lib(new_lib) {
 var _ = new_lib;
 
 
+
 (function (My_Lib)
 {
 
@@ -139,3 +140,5 @@ My_Lib.travers_scene = function(root, func)
 
 
 }) (_);
+
+//export default new_lib;

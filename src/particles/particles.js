@@ -1,14 +1,20 @@
+import {My_Lib} from '../base/my_lib.js';
+import {Particle_Emitter} from './particle_emitter.js';
+import {Particle_Affector} from './particle_affector.js';
+import {Particles_Points} from './particles_points.js';
+import {Particle_Shaders} from './particle_shaders.js';
 
-My_Lib.Particle_System = function (params)
+
+function Particle_System(params)
 {
     this.uuid = _.generateUUID();    
 
     //restricted params
 	if (!params.emitter) {
-		params.emitter = new My_Lib.Particle_Emitter(1);
+		params.emitter = new Particle_Emitter(1);
 	}
 	if (!params.affector) {
-		params.affector = new My_Lib.Particle_Affector();
+		params.affector = new Particle_Affector();
 	}
     params.no_fade_color = !!params.no_fade_color;    
     params.particle_lifetime = params.particle_lifetime || 3.0;
@@ -61,20 +67,20 @@ My_Lib.Particle_System = function (params)
     }
 }
 
-My_Lib.Particle_System.prototype.set_name = function (name)
+Particle_System.prototype.set_name = function (name)
 {
     this.name = name;
     this.node.name = name;
 }
 
-My_Lib.Particle_System.prototype.suicide = function ()
+Particle_System.prototype.suicide = function ()
 {
 	this.node.parent.remove(this.node);
-    My_Lib.event_hub.emit("kill_me", this);
+    main_event_hub.emit("kill_me", this);
 }
 
 
-My_Lib.Particle_System.prototype.create_particle_data = function (count)
+Particle_System.prototype.create_particle_data = function (count)
 {
     var particle_data = new Array(count);
     var p;
@@ -88,7 +94,7 @@ My_Lib.Particle_System.prototype.create_particle_data = function (count)
     this.particle_data = particle_data;
 }
 
-My_Lib.Particle_System.prototype.create_particle_geometry = function(count)
+Particle_System.prototype.create_particle_geometry = function(count)
 {
     this.create_particle_data(count);
     
@@ -126,7 +132,7 @@ My_Lib.Particle_System.prototype.create_particle_geometry = function(count)
 }
 
 
-My_Lib.Particle_System.prototype.generate_material_name = function ()
+Particle_System.prototype.generate_material_name = function ()
 {
 	var my_name = "MY_PARTICLE_MATERIAL";
 	if (!!this.texture) {
@@ -138,7 +144,7 @@ My_Lib.Particle_System.prototype.generate_material_name = function ()
 	return my_name;
 }
 
-My_Lib.Particle_System.prototype.blending_mode = 
+Particle_System.prototype.blending_mode = 
 {
 	"additive": {
 		"blendSrc": THREE.OneFactor,
@@ -158,7 +164,7 @@ My_Lib.Particle_System.prototype.blending_mode =
 	}
 };
 
-My_Lib.Particle_System.prototype.convert_blending_mode = function (blending)
+Particle_System.prototype.convert_blending_mode = function (blending)
 {
     var three_blending;
 	var factors = this.blending_mode["one_alpha"];
@@ -173,7 +179,7 @@ My_Lib.Particle_System.prototype.convert_blending_mode = function (blending)
     return {"blending": three_blending, "factors":factors};
 }
 
-My_Lib.Particle_System.prototype.set_texture = function (texture)
+Particle_System.prototype.set_texture = function (texture)
 {
 	if (typeof texture === 'string') {
         if (this.params.texture === texture) {
@@ -195,7 +201,7 @@ My_Lib.Particle_System.prototype.set_texture = function (texture)
 }
 
 
-My_Lib.Particle_System.prototype.create_uniforms = function ()
+Particle_System.prototype.create_uniforms = function ()
 {
     var uniforms = 
     {
@@ -220,7 +226,7 @@ My_Lib.Particle_System.prototype.create_uniforms = function ()
     return uniforms;
 }
 
-My_Lib.Particle_System.prototype.calc_defines = function ()
+Particle_System.prototype.calc_defines = function ()
 {
     var defines = {};
     if (this.params.pre_alpha) {
@@ -236,17 +242,18 @@ My_Lib.Particle_System.prototype.calc_defines = function ()
 }
 
 
-My_Lib.Particle_System.prototype.select_texture = function (texture)
+Particle_System.prototype.select_texture = function (texture)
 {
 	if (typeof this.texture === 'string') {
 		this.texture = My_Lib.Texture_Manager.get(this.texture);
+        console.log(My_Lib.Texture_Manager.resources);
         if (!this.texture) {
-            console.error("Oh, not found texture " + this.params.texture + " in create particle material!");
+            console.error("Oh, not found texture <" + this.params.texture + "> in create particle material! Instead get "+this.texture);
         }
 	}
 }
 
-My_Lib.Particle_System.prototype.create_particle_material = function()
+Particle_System.prototype.create_particle_material = function()
 {
 	
     this.select_texture(this.texture);
@@ -272,13 +279,13 @@ My_Lib.Particle_System.prototype.create_particle_material = function()
 	return mat;
 }
 
-My_Lib.Particle_System.prototype.recreate_material = function ()
+Particle_System.prototype.recreate_material = function ()
 {
     this.node.material = this.material = this.create_particle_material();
 }
 
 
-My_Lib.Particle_System.prototype.set_pre_alpha = function (pre_alpha)
+Particle_System.prototype.set_pre_alpha = function (pre_alpha)
 {
     if (this.params.pre_alpha !== !!pre_alpha) {
         this.params.pre_alpha = pre_alpha;
@@ -286,7 +293,7 @@ My_Lib.Particle_System.prototype.set_pre_alpha = function (pre_alpha)
     }
 }
 
-My_Lib.Particle_System.prototype.set_point_size = function (size)
+Particle_System.prototype.set_point_size = function (size)
 {
     if (this.params.size != size) {
         this.params.size = size;
@@ -294,7 +301,7 @@ My_Lib.Particle_System.prototype.set_point_size = function (size)
     }
 }
 
-My_Lib.Particle_System.prototype.set_blending = function (blending)
+Particle_System.prototype.set_blending = function (blending)
 {
     this.params.blending = blending;
     var b = this.convert_blending_mode(blending);
@@ -305,7 +312,7 @@ My_Lib.Particle_System.prototype.set_blending = function (blending)
 
 
 
-My_Lib.Particle_System.prototype.emit_particles = function (dt, need_emit)
+Particle_System.prototype.emit_particles = function (dt, need_emit)
 {
 	//emit particles
 	var p;
@@ -333,7 +340,7 @@ My_Lib.Particle_System.prototype.emit_particles = function (dt, need_emit)
 	}
 }
 
-My_Lib.Particle_System.prototype.update_particle_geometry = function (dt)
+Particle_System.prototype.update_particle_geometry = function (dt)
 {
 	var verts = this.geometry.vertices.array;
 	var params = this.geometry.params.array;
@@ -370,13 +377,13 @@ My_Lib.Particle_System.prototype.update_particle_geometry = function (dt)
 }
 
 
-My_Lib.Particle_System.prototype.update = function (dt)
+Particle_System.prototype.update = function (dt)
 {
 	this.update_particle_geometry(dt);
 }
 
 
-My_Lib.Particle_System.prototype.toJSON = function ()
+Particle_System.prototype.toJSON = function ()
 {
 	var data = {};
     data.uuid = this.uuid;
@@ -394,12 +401,12 @@ My_Lib.Particle_System.prototype.toJSON = function ()
 }
 
 
-My_Lib.Particle_System.prototype.set_emitter = function (emitter)
+Particle_System.prototype.set_emitter = function (emitter)
 {
     this.emitter = this.params.emitter = emitter;
 }
 
-My_Lib.Particle_System.prototype.set_particle_life_length = function (val)
+Particle_System.prototype.set_particle_life_length = function (val)
 {
 	if (val !== this.params.particle_lifetime) {
 		this.params.particle_lifetime = this.particle_lifetime = val;
@@ -407,12 +414,12 @@ My_Lib.Particle_System.prototype.set_particle_life_length = function (val)
 	}
 }
 
-My_Lib.Particle_System.prototype.set_emission_per_second = function (val)
+Particle_System.prototype.set_emission_per_second = function (val)
 {
 	this.emitter.emit_per_second = val;
 }
 
-My_Lib.Particle_System.prototype.set_particle_count = function (count)
+Particle_System.prototype.set_particle_count = function (count)
 {
 	if (count !== this.particle_data.length) {
 		this.params.count = count;
@@ -420,15 +427,17 @@ My_Lib.Particle_System.prototype.set_particle_count = function (count)
 	}
 }
 
-My_Lib.Particle_System.prototype.set_color = function (color)
+Particle_System.prototype.set_color = function (color)
 {
     this.params.color.r = color.r;
     this.params.color.g = color.g;
     this.params.color.b = color.b;
 }
 
-My_Lib.Particle_System.prototype.set_bounding_sphere_radius = function (radius)
+Particle_System.prototype.set_bounding_sphere_radius = function (radius)
 {
     this.node.boundingSphere.radius = radius;
 }
 
+
+export {Particle_System};

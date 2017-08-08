@@ -1,4 +1,15 @@
-Scene_Serializer use for save, particle and animations to json and loading.
+Scene_Serializer use for save to JSON whole scene, including particle and animations.
+
+Example
+
+1) first create serializer object
+    var ss = new Scene_Serializer();
+2) second call its method toJSON, given them root scene graph object
+    ss.toJSON(main_scene);
+
+3) in property json must be object, filled all data. We may use JSON.stringify method on it, that get textual representation in json format
+    JSON.stringify(ss.json);
+
 
 
 var ss = new Scene_Serializer();

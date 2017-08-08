@@ -1,21 +1,24 @@
-//base class for particle affector
-My_Lib.Particle_Affector = function ()
-{
+import {My_Lib} from '../base/my_lib.js';
 
+//base class for particle affector
+function Particle_Affector()
+{
+    this.id = _.generateUUID();
 }
 
 
-My_Lib.Particle_Affector.prototype.affect = function (dt, pdata, vert, color)
+Particle_Affector.prototype.affect = function (dt, pdata, vert, color)
 {
 	return true;
 }
 
-My_Lib.Particle_Affector.prototype.toJSON = function (child)
+Particle_Affector.prototype.toJSON = function (child)
 {
 	if (child) {
 		return {};
 	}
 	var data = {
+        id: this.id,
 		"name": "Particle_Affector",
 		params : {}
 	};
@@ -25,19 +28,22 @@ My_Lib.Particle_Affector.prototype.toJSON = function (child)
 	return data;
 }
 
-My_Lib.Particle_Affector.prototype.parse = function (json)
+Particle_Affector.prototype.parse = function (json)
 {
 }
 
-My_Lib.Force_Affector = function ()
+My_Lib.Register_Class("Particle_Affector", Particle_Affector);
+
+function Force_Affector()
 {
+    Particle_Affector.call(this);
 	this.forces = new Array();
 }
 
-My_Lib.Force_Affector.prototype = Object.create(My_Lib.Particle_Affector.prototype);
+Force_Affector.prototype = Object.create(Particle_Affector.prototype);
 
-_.copy_object(My_Lib.Force_Affector.prototype, {
-	constructor: My_Lib.Force_Affector,
+_.copy_object(Force_Affector.prototype, {
+	constructor: Force_Affector,
 	add_force: function (force)
 	{
 		this.forces.push(force);
@@ -62,7 +68,8 @@ _.copy_object(My_Lib.Force_Affector.prototype, {
 	{
 		var data = {};
 		data.name = "Force_Affector";		
-		data.params = My_Lib.Particle_Affector.prototype.toJSON.call(this, this);
+        data.uuid = this.uuid;
+		data.params = Particle_Affector.prototype.toJSON.call(this, this);
 		if (this.forces.length > 0) {
 			data.params.forces = new Array();
 			for(var i = 0; i < this.forces.length; i++) {
@@ -89,4 +96,6 @@ _.copy_object(My_Lib.Force_Affector.prototype, {
 	}
 });
 
-My_Lib.Register_Class("Force_Affector", My_Lib.Force_Affector);
+My_Lib.Register_Class("Force_Affector", Force_Affector);
+
+export { Particle_Affector, Force_Affector };

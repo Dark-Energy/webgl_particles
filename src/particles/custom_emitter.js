@@ -1,9 +1,16 @@
-Custom_Emitter = function ()
+import {My_Lib} from '../base/my_lib.js';
+import {Particle_Emitter} from './particle_emitter.js';
+
+
+function Custom_Emitter()
 {
-	My_Lib.Particle_Emitter.apply(this, arguments);
+	Particle_Emitter.apply(this, arguments);
 }
 
-My_Lib.create_class(My_Lib.Particle_Emitter, Custom_Emitter, {
+
+Custom_Emitter.prototype = Object.create(Particle_Emitter.prototype);
+
+var methods = {
     emit: function (p, color) {
         if (this.custom_func) {
             this.custom_func(p, color);
@@ -45,8 +52,12 @@ My_Lib.create_class(My_Lib.Particle_Emitter, Custom_Emitter, {
         My_Lib.Particle_Emitter.prototype.parse.call(this, data);        
         this.set_emit_function (data.source_code);
     },
-    }, "Custom_Emitter");
-    
+    constructor: Custom_Emitter,
+};
+
+_.copy_object(Custom_Emitter.prototype, methods);
+My_Lib.Register_Class("Custom_Emitter", Custom_Emitter);
+
 
 function test()
 {
@@ -74,3 +85,5 @@ Custom_Emitter.prototype = Object.create(My_Lib.Particle_Emitter.prototype);
 Custom_Emitter.prototype.constructor = Cone_Emitter;
 My_Lib.Register_Class("Custom_Emitter", Cone_Emitter);
 */
+
+export {Custom_Emitter};

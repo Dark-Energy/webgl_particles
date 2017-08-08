@@ -1,6 +1,6 @@
-(function () {
+import {Color_Picker} from './color_picker.js';
 
-editor.Blending_Selector = {
+var Blending_Selector = {
     props: {
         "blending": {
             type : String,
@@ -23,7 +23,7 @@ editor.Blending_Selector = {
     },
 };
 
-editor.Behavior = {
+var Behavior = {
     props: ["affect_method", "emit_method"],
     
     data: function () {
@@ -49,7 +49,7 @@ editor.Behavior = {
 
 };
 
-editor.Particle_Params = 
+var Particle_Params = 
 {
     props: {
         "params": {
@@ -85,7 +85,7 @@ editor.Particle_Params =
     }
 };
    
-editor.Particles_Props = 
+var Particles_Props = 
 {
     props: {
         "params": {
@@ -138,14 +138,14 @@ editor.Particles_Props =
     
     },
     components: {
-        //'color-picker': editor.Color_Picker,
-        'blending-mode': editor.Blending_Selector,
-        'behavior': editor.Behavior,
-        'particle-params': editor.Particle_Params,
+        'color-picker': Color_Picker,
+        'blending-mode': Blending_Selector,
+        'behavior': Behavior,
+        'particle-params': Particle_Params,
     },
 };
 
-Vue.component("ParticlesProps", editor.Particles_Props);
+//Vue.component("ParticlesProps", Particles_Props);
 
-})();
 
+export {Particles_Props};

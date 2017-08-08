@@ -1,0 +1,3 @@
+in my project many modules, some modules import other modules, some modules are imported many times. code of this modules duplicated, though names of variables and functions changes. in result code is breaking. may could  build some sort of import graph before doing bundling?
+
+Useless. Going Trying Webpack.

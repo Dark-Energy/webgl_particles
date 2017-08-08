@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+</head>
+
+<body>
+
+
+<div id="screen">
+</div>
+
+
+<script type="text/javascript" src="../sidelibs/three.js"> </script>
+<script type="text/javascript" src="../src/utils/utils.js"> </script>
+<script type="text/javascript" src="../build/webpack.build.js"> </script>
+
+<script>
+
+/*
+console.log("classes in engine");
+Engine.My_Lib.Print_Classes();
+console.log("contains of Engine");
+console.log(Engine);
+console.log("my lib", Engine.My_Lib);
+console.log("my_lib.texture_manager", Engine.My_Lib.texture_manager);
+console.log("my_lib.particle_manager", Engine.My_Lib.particle_manager);
+console.log("Cone Emitter", Engine.Cone_Emitter);
+console.log("Particle Emitter", Engine.Particle_Emitter);
+console.log("Particle System", Engine.Particle_Sytem);
+console.log("Euler Animation", Engine.Euler_Animation);
+console.log("my lib", Engine.My_Lib);
+*/
+
+
+
+var anim = new Engine.Euler_Animation(0, 0, Math.PI);
+//console.log(anim);
+var emitter = new Engine.Cone_Emitter();
+//console.log(emitter);
+
+
+console.log("my lib", Engine.My_Lib);
+
+var params =
+{
+    "count": 100,
+    "emitter": emitter
+};
+
+var ps = new Engine.Particle_System(params);
+var data = ps.toJSON();
+ps.node.add_animation(anim);
+Engine.My_Lib.particle_manager.add(ps);
+console.log("This is Particle_System \n", JSON.stringify(data, null, ' '));
+
+var scene = new THREE.Scene();
+console.log("\tadd particles to scene");
+scene.add(ps.node);
+
+console.log("create serializer");
+var ss = new Engine.Scene_Serializer();
+console.log("get json data");
+var data = ss.toJSON(scene);
+console.log("This is Serializer results!!!!\n ", JSON.stringify(data, null, ' '));
+
+console.log(Engine.My_Lib.Registered_Classes);
+var tmp = ss.load(ss.json);
+
+
+var app = new Engine.Application();
+app.before_create_main_scene = function ()
+{
+    console.log("before create main scene");
+}
+
+app.created = function ()
+{
+    console.log("created", this.configuration);
+    console.log("renderer",    this.renderer)
+    console.log("canvas ", this.canvas);
+    console.log("main scene", this.main_scene);
+    console.log("main camera", this.main_camera);
+}
+app.start();
+
+//app.loop();
+
+</script>
+
+</body>
+</html>

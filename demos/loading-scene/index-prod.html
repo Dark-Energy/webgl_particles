@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+<title> particles demo editor</title>
+   <link rel="stylesheet" type="text/css" href="css/main.css"  /> 
+</head>
+
+<body>
+<div id="screen">
+</div>
+
+<p>This ugly crap loading scene. Firstly, this loading texture list by means Package Manager. Fully name. This class loaded json list of textures, then loading all textures, then call event data_loaded.
+<p>data_loaded is function callback, which call scene_loaded. This method load JSON with scene defenition, parse it, create all objects and call event scene_loaded.
+<p>This is last function callback, which run rendering loop. 
+
+
+<script type="text/javascript" src="../../sidelibs/three.js"> </script>
+<script type="text/javascript" src="../../src/utils/utils.js"> </script>
+<script type="text/javascript" src="../../build/prod.build.js"> </script>
+
+<script type="text/javascript" src="app-load.js"> </script>
+
+
+
+</body>
+</html>

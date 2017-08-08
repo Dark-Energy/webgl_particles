@@ -1,7 +1,7 @@
-(function ()
-{
+import {Particles_Props} from './particles_props.js';
+import {Texture_Panel} from './texture_panel.js';
 
-editor.Particles_Panel = 
+var Particles_Panel = 
 {
     props: {
         particles : {
@@ -24,13 +24,14 @@ editor.Particles_Panel =
                 first_time: true,
                 particle_params: {},
                 my_selected : false,
+                texture_panel_is_visible: false,
             };
     },
     methods:
     {
         add_to_select: function (id)
         {
-            console.log("select new ", id, this.particles);
+            //console.log("select new ", id, this.particles);
             this.particles.push(id);
             this.my_selected = id;
         },
@@ -65,6 +66,12 @@ editor.Particles_Panel =
             event_hub.$emit("change_particles_color", this.my_selected, event);
         },
         
+        show_texture_panel: function (event)
+        {
+            this.texture_panel_is_visible = !this.texture_panel_is_visible;
+            //console.log("this ", this.texture_panel_is_visible);
+        },
+        
 		select_particles: function (event)
 		{
             this.particle_params = event_hub.get_particle_params(this.my_selected);                  
@@ -73,10 +80,6 @@ editor.Particles_Panel =
 		{
             event_hub.$emit("replay", this.my_selected, this.particle_params);
 		},
-        show_texture_select: function (event)
-        {
-            this.texture_select_visible = !this.texture_select_visible;
-        }
         
     },
     created: function ()
@@ -102,7 +105,7 @@ editor.Particles_Panel =
 
     watch: {
         particles: function (arr) {
-            console.log("watc particles", arr);
+            //console.log("watch particles", arr);
             if (this.particles.length > 0) {
                 if (this.first_time) {
                     this.my_selected = this.particles[0];
@@ -112,7 +115,7 @@ editor.Particles_Panel =
         },
         my_selected: function (new_selected) 
         {
-            console.log("watch new selected", new_selected);
+            //console.log("watch new selected", new_selected);
             this.particle_params = event_hub.get_particle_params(this.my_selected);
         }
     },
@@ -135,19 +138,22 @@ editor.Particles_Panel =
     <div class="particles-properties">\
         <div v-if="my_selected" >\
             <ParticlesProps  :params="particle_params" />\
-            <texture-panel :textures="textures" :particle_id="my_selected" :selected="particle_params.texture"/>\
+            <a href="javascript:void(0)" @click="show_texture_panel">Show texture panel</a>\
+            <div class="dummy" v-if="texture_panel_is_visible">\
+            <texture-panel :textures="textures" :object_id="my_selected" :selected="particle_params.texture"/>\
+            </div>\
         </div>\
     </div>\
     </div>',
    
-   /*
+   
     components: {
-        'ParticlesProps': editor.Particles_Props,
-        'texture-panel': editor.Texture_Panel,
-    },*/
+        'ParticlesProps': Particles_Props,
+        'texture-panel': Texture_Panel,
+    },
 };
 
 
-Vue.component("particles-panel", editor.Particles_Panel);
+//Vue.component("particles-panel", Particles_Panel);
 
-})();
+export {Particles_Panel};

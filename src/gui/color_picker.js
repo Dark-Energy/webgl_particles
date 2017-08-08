@@ -1,7 +1,5 @@
-(function ()
-{
 
-editor.Color_Picker = {
+var Color_Picker = {
     props: {
         value: {
             type: Object,
@@ -35,6 +33,7 @@ editor.Color_Picker = {
 };
 
 
-Vue.component("color-picker", editor.Color_Picker);
+//Vue.component("color-picker", Color_Picker);
 
-})();
+export {Color_Picker};
+

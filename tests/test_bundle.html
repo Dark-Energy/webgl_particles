@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+</head>
+
+<body>
+
+<div id="testapp">
+</div>
+
+
+<div id="logscreen">
+</div>
+
+<div id="app">
+
+</div>
+
+<script type="text/javascript" src="../sidelibs/three.js"> </script>
+<script type="text/javascript" src="../src/utils/utils.js"> </script>
+<script type="text/javascript" src="../build/bundle.js"> </script>
+
+<script>
+
+console.log(_);
+console.log(_.generateUUID());
+
+var anim = new Engine.Euler_Animation(0, 0, Math.Pi);
+console.log(anim);
+
+console.log(Engine.Cone_Emitter);
+var emitter = new Engine.Cone_Emitter();
+console.log(emitter);
+
+var params =
+{
+    "count": 100,
+    "emitter": emitter
+};
+
+var ps = new Engine.Particle_System(params);
+var data = ps.toJSON();
+console.log(JSON.stringify(data, null, ' '));
+
+var scene = new THREE.Scene();
+console.log("add particles to scene");
+scene.add(ps.node);
+
+console.log("create serializer");
+var ss = new Engine.Scene_Serializer();
+console.log("get json data");
+var data = ss.toJSON(scene);
+console.log(JSON.stringify(data, null, ' '));
+
+
+</script>
+
+</body>
+</html>

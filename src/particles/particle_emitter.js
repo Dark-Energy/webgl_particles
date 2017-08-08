@@ -1,6 +1,7 @@
+import {My_Lib} from '../base/my_lib.js';
 
 //Base class for Particle Emitters
-My_Lib.Particle_Emitter = function (emit_per_second)
+function Particle_Emitter(emit_per_second)
 {
     this.uuid = _.generateUUID();
     this.name = '';
@@ -11,12 +12,12 @@ My_Lib.Particle_Emitter = function (emit_per_second)
 	this.lifetime = {"min": 0, "max":2.0};
 }
 
-My_Lib.Particle_Emitter.prototype.emit_life = function ()
+Particle_Emitter.prototype.emit_life = function ()
 {
 	return this.lifetime.min + Math.random() * (this.lifetime.max - this.lifetime.min);
 }
 
-My_Lib.Particle_Emitter.prototype.calc_emitted_particles = function (dt)
+Particle_Emitter.prototype.calc_emitted_particles = function (dt)
 {
 	//count particles need emit
 	this.emit_delta += this.emit_per_second*dt;
@@ -30,7 +31,7 @@ My_Lib.Particle_Emitter.prototype.calc_emitted_particles = function (dt)
 }
 
 
-My_Lib.Particle_Emitter.prototype.emit = function (p, c, matrix)
+Particle_Emitter.prototype.emit = function (p, c, matrix)
 {
     p.position.set(0, 0, 0);
     p.velocity.set(0, 1, 0);
@@ -42,7 +43,7 @@ My_Lib.Particle_Emitter.prototype.emit = function (p, c, matrix)
 }
 
 
-My_Lib.Particle_Emitter.prototype.toJSON = function (child)
+Particle_Emitter.prototype.toJSON = function (child)
 {
 	var params = {
         "uuid": this.uuid,
@@ -64,7 +65,7 @@ My_Lib.Particle_Emitter.prototype.toJSON = function (child)
 	return data;
 }
 
-My_Lib.Particle_Emitter.prototype.parse = function (data)
+Particle_Emitter.prototype.parse = function (data)
 {
 	this.emit_per_second = data.emit_per_second;
     this.name = data.name;
@@ -72,4 +73,6 @@ My_Lib.Particle_Emitter.prototype.parse = function (data)
 	_.copy_object(this.lifetime, data.lifetime);
 }
 
-My_Lib.Register_Class("Particle_Emitter", My_Lib.Particle_Emitter);
+My_Lib.Register_Class("Particle_Emitter", Particle_Emitter);
+
+export { Particle_Emitter };

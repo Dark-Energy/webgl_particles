@@ -1,18 +1,16 @@
-(function () 
-{
 
-
-editor.Texture_Panel = 
+var Texture_Panel = 
 {
     template: 
         '<div class="texture-panel">\
-            <select id="texture_select" :value="selected" v-on:change="choose_texture">\
+            <div class="high-tools-panel">\
+            <select id="texture_select" v-model="selected" v-on:change="choose_texture">\
             <option v-for="option in textures" v-bind:value="option">\
                 {{ option }}\
             </option>\
             </select>\
             <button type="button" v-on:click="apply">apply</button>\
-            <br>\
+            </div>\
             <div class="texture-canvas">\
             <canvas id="texture-canvas-obj" class="texture-canvas" ref="canvas">\
             </canvas>\
@@ -21,9 +19,11 @@ editor.Texture_Panel =
                 Texture Format  {{format}} <br />\
                 Texture Width {{texture_width}} Height {{texture_height}}\
             </div>\
+            <div class="clear" />\
         </div>',
 
-    props: ["textures", "selected", "particle_id"],
+        //texture dictionaries, selected texture, object id, which selected texture
+    props: ["textures", "selected", "object_id"],
     
     data: function () {
         return {
@@ -32,6 +32,7 @@ editor.Texture_Panel =
             texture_height : 0,
             format : '',
             panel_visible: false,
+            selected: '',
         }
     },
     
@@ -44,11 +45,12 @@ editor.Texture_Panel =
         {
             this.selected = event.target.value;
             this.selected_texture = this.selected;
-            this.draw_texture(this.selected);
+            this.draw_texture(this.selected_texture);
         },
         apply: function ()
         {
-            event_hub.$emit("select_texture", this.particle_id, this.selected_texture);
+            //console.log("apply of ", this.object_id, this.selected_texture);
+            event_hub.$emit("select_texture", this.object_id, this.selected_texture);
         },
         draw_texture: function (name)
         {
@@ -76,19 +78,24 @@ editor.Texture_Panel =
             this.draw_texture(this.selected_texture);
         }
     },
+
+    mounted: function () {
+      this.get_texture_from_particles(this.object_id);
+      //console.log("mount of texture panel", this.object_id, this.selected_texture, this.selected);
+      //print("<h3>Hi! I mounted and my texture is " + this.selected_texture + "," + this.selected + "</h3>");
+    },
+
     
     watch: {
-        particle_id: function (value) { 
-            this.get_texture_from_particles(value);
-        }
+        object_id: function (value) { 
+           this.get_texture_from_particles(value);
+         },
     },
-    
-    mounted: function () {
-        this.get_texture_from_particles(this.particle_id);
-    },
+   
     
 };
 
-Vue.component("texture-panel", editor.Texture_Panel);
 
-})();
+
+
+export {Texture_Panel};

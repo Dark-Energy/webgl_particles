@@ -55,4 +55,4 @@ Particles_Points.prototype.raycast = function (raycaster, intersects)
 }
 
 
-
+export {Particles_Points};

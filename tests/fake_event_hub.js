@@ -1,3 +1,19 @@
+function print(text)
+{
+    var ch = document.getElementById("output");
+    var p = document.createElement('p');
+    p.innerHTML = text;
+    ch.appendChild(p);
+}
+
+function print_text(text)
+{
+    var ch = document.getElementById("output");
+    var p = document.createElement('pre');
+    var t = document.createTextNode(text);
+    p.appendChild(t);
+    ch.appendChild(p);
+}
 
 
 var array_format_to_string = [];

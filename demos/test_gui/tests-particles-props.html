@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+   <link rel="stylesheet" type="text/css" href="../../css/main.css"  /> 
+</head>
+
+<body>
+
+<div id="control-panel">
+    <div id="app">
+    </div>
+</div>
+
+<script type="text/javascript" src="../../sidelibs/vue.min.js"> </script>
+<script type="text/javascript" src="../../src/utils/utils.js"> </script>
+<script type="text/javascript" src="../../src/utils/image_utils.js"> </script>
+<script type="text/javascript" src="../../tests/fake_event_hub.js"> </script>
+<script type="text/javascript" src="../../build/webpack.gui.js"> </script>
+
+<script>
+
+var v = new Vue(
+    {el:"#app",
+    data: {
+        particle_params: test_params,
+    },
+    template: '<div id="app">\
+            <particles-props :params="particle_params" />\
+            </div>',
+    components: {"particles-props": Editor_Gui.Particles_Props},
+    });
+
+</script>
+
+</body>
+</html>

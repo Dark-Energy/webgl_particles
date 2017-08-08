@@ -16,11 +16,30 @@
 	}
 
     
+.clear
+{
+    clear: both;
+}
+    
 .prop-column
 {
     display: inline-block;
 }    
 
+
+/*
+
+TEXTURE PANEL
+
+*/
+
+.texture-panel
+{
+    position: relative;
+    margin: 5px 5px;
+    padding: 5px 5px;
+    background-color: #ffffff;
+}
 
 .texture-canvas-obj
 {
@@ -32,14 +51,29 @@
 .texture-canvas
 {
     float: left;
+    border: 1px outline #FF0000;
+    padding: 5px 5px;
+    
 }
+
+.texture-panel .high-tools-panel
+{
+    position: relative;
+    outline: 1px solid black;
+    width: 100%;
+}
+
 
 .texture-info
 {
     float: left;
     padding: 10px 10px;
+    display: inline-block;
 }
 
+/*
+
+*/
 
 .info-panel
 {

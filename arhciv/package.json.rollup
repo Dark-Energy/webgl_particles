@@ -1,0 +1,41 @@
+{
+  "author": "dark-energy",
+  "name": "webgl-particles",
+  "version": "0.0.2",
+  "devDependencies": {
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-latest": "^6.24.1",
+    "grunt": "^1.0.1",
+    "grunt-contrib-uglify": "^3.0.1",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-watch": "^4.3.1"
+  },
+  "description": "my particles demo",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "grunt",
+    "gui": "grunt Gruntfile2.js",
+    "devr": "rollup -c -w",
+    "devapp": "rollup -w -c rollup.app.js"    
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dark-Energy/webgl_particles.git"
+  },
+  "keywords": [
+    "webgl",
+    "3d",
+    "shaders",
+    "gpu",
+    "particles"
+  ],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dark-Energy/webgl_particles/issues"
+  },
+  "homepage": "https://github.com/Dark-Energy/webgl_particles#readme"
+}
