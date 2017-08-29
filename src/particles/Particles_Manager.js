@@ -48,6 +48,13 @@ _.copy_object(Particle_Manager.prototype,
             this.particles_array[i].update(dt);
         }
     },
+    
+    create_by_params: function (params)
+    {
+        var ps = new Particle_System(params);
+        this.add(ps);
+        return ps;
+    },
 
 
     toJSON : function ()
@@ -178,7 +185,7 @@ _.copy_object(Particle_Manager.prototype,
         var name = this.create_name();
         
         var params = {};
-        var ps = new My_Lib.Particle_System(params);
+        var ps = new Particle_System(params);
         ps.set_name(name);
         this.add(ps, name);
         return ps;

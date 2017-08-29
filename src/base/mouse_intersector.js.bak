@@ -28,8 +28,9 @@ Mouse_Intersector.unproject = function(vector, camera)
 {
     var r = new THREE.Vector3();
     r.copy(vector);
+    r.z = 1;
 	r.unproject(camera);
-    //this done yet
+    //console.log(camera.matrixWorldInverse);
     //r.applyMatrix4(camera.matrixWorldInverse);    
     return r;
 }

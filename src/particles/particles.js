@@ -3,68 +3,65 @@ import {Particle_Emitter} from './particle_emitter.js';
 import {Particle_Affector} from './particle_affector.js';
 import {Particles_Points} from './particles_points.js';
 import {Particle_Shaders} from './particle_shaders.js';
+import {Color_Domain} from './color_domain.js';
 
 
-function Particle_System(params)
+function Particle_System(data)
 {
     this.uuid = _.generateUUID();    
-
-    //restricted params
-	if (!params.emitter) {
-		params.emitter = new Particle_Emitter(1);
-	}
-	if (!params.affector) {
-		params.affector = new Particle_Affector();
-	}
-    params.no_fade_color = !!params.no_fade_color;    
-    params.particle_lifetime = params.particle_lifetime || 3.0;
     
-	if (typeof params.pre_alpha === 'undefined') {
-		params.pre_alpha = true;
-	}
+    this.params = this.config_params(data);
+
+  
+	this.emitter = this.params.emitter;
+	this.affector = this.params.affector;    
+    this.particle_lifetime = this.params.particle_lifetime;
+    this.texture = this.params.texture;
 	
-	if (typeof params.depth_test === 'undefined') {
-		params.depth_test = true;
-	}
-	
-	if (params["depth_write"] === undefined){
-		params.depth_write = false;
-	}
+	this.dynamic_color = false;
 
-	if (!params.color) {
-		params.color  = {"r":1, "g":1, "b":1};
-	}
-    
-    if (!params.blending) {
-        params.blending = "one_alpha";
-    }
-
-    params.size = params.size || 1;
-    
-    if (!params.count) params.count = 100;
-
-    
-	this.emitter = params.emitter;
-	this.affector = params.affector;    
-    this.name = params.name || '';
-    this.particle_lifetime = params.particle_lifetime;
-	this.params = params;
-
-    
-    this.texture = params.texture;
-	
-	this.dynamic_color = (!!params.end_color || !!params.random_color);
-
-
-	var count = params.count;
+	var count = this.params.count;
 	
 	this.material = this.create_particle_material();
 	this.node = new Particles_Points(this.create_particle_geometry(count), this.material);
     this.node.name = this.name;
+    this.node.boundingSphere.radius = this.params.bounding_radius;
 
-    if (typeof this.params.bounding_sphere !== 'undefined') {
-        this.node.boundingSphere.radius = params.bounding_sphere;
+}
+
+
+Particle_System.prototype.config_params = function (data)
+{
+    var params = 
+    {
+    };
+    //default
+    params.particle_lifetime = 3.0;
+    params.no_fade_color = false;
+    params.pre_alpha = true;
+    params.depth_test = true;
+    params.depth_write = false;
+    params.color  = {"r":1, "g":1, "b":1};
+	params.blending = "one_alpha";
+    params.size = 1;
+    params.count = 100;
+    params.name = '';
+    params.bounding_radius = 2.0;
+    params.discrete_emission = false;
+    params.apply_world_matrix_on_emit = true;
+    
+    for(var key in data) {
+        if (Object.prototype.hasOwnProperty.call(data, key)){
+            if (data[key] !== undefined) {
+                params[key] = data[key];
+            }
+        }
     }
+    
+	params.emitter = data.emitter || new Particle_Emitter(1);
+	params.affector = data.affector || new Particle_Affector();
+    
+    return params;
 }
 
 Particle_System.prototype.set_name = function (name)
@@ -109,10 +106,14 @@ Particle_System.prototype.create_particle_geometry = function(count)
 		vertices[i*3+2] = 0;
 
 		params[i] = 0.0;
-
-		colors[i*3] = this.params.color.r;
-		colors[i*3+1] = this.params.color.g;
-		colors[i*3+2] = this.params.color.b;
+        
+        if (this.params.color_domain) {
+            this.params.color_domain.fill(colors, i*3);
+        } else {
+            colors[i*3] = this.params.color.r;
+            colors[i*3+1] = this.params.color.g;
+            colors[i*3+2] = this.params.color.b;
+       }
 	}
 
 	this.geometry = {};
@@ -129,6 +130,92 @@ Particle_System.prototype.create_particle_geometry = function(count)
 	geom.addAttribute('params', this.geometry.params);	
 
     return geom;
+}
+
+
+Particle_System.prototype.discrete_emit = function (count)
+{
+    this.emit_particles(0, count);
+	this.geometry.vertices.needsUpdate = true;
+	this.geometry.params.needsUpdate = true;
+	this.geometry.colors.needsUpdate = true;
+}
+
+
+Particle_System.prototype.emit_particles = function (dt, need_emit)
+{
+	//emit particles
+	var p;
+	var verts = this.geometry.vertices.array;
+	var params = this.geometry.params.array;
+	
+    var old_need_emit = need_emit;
+    this.node.updateMatrixWorld(true);
+    var matrix = this.node.matrixWorld;
+	for(var i =0; i < this.particle_data.length && need_emit > 0; i++) {
+		if (!(params[i] > 0)) {
+        
+			p = this.particle_data[i];
+			this.emitter.emit(p, null, matrix);
+			p.lifetime = this.particle_lifetime;
+            
+			verts[i*3] = p.position.x;
+			verts[i*3+1] = p.position.y;
+			verts[i*3+2] = p.position.z;
+			params[i] = p.lifetime;
+			need_emit--;
+			//colors[i*3] = this.params.color.r
+			//colors[i*3+1] = this.params.color.g;
+			//colors[i*3+2] = this.params.color.b;
+		}
+	}
+    //console.log("created new particles ", old_need_emit - need_emit);
+}
+
+Particle_System.prototype.update_particle_geometry = function (dt)
+{
+	var verts = this.geometry.vertices.array;
+	var params = this.geometry.params.array;
+	var p;
+	var vert = new THREE.Vector3(0,0,0);
+	var dummy_color = {"r":1, "b":1, "g":1};
+	for(var i = 0; i < this.particle_data.length; i++) {
+	
+		if (params[i] > 0) {
+			p = this.particle_data[i];
+			
+			//integrate
+			p.position.x += p.velocity.x * dt;
+			p.position.y += p.velocity.y * dt;
+			p.position.z += p.velocity.z * dt;
+			p.lifetime -= dt;
+			
+			if (p.lifetime <= 0 || !this.affector.affect(dt, p, vert, dummy_color)) {
+				p.lifetime = 0;
+			}
+			params[i] = p.lifetime;			
+			verts[i*3] = p.position.x;
+			verts[i*3+1] = p.position.y;
+			verts[i*3+2] = p.position.z;
+		}
+	}
+
+    if (!this.params.discrete_emission) {
+        var need_emit = this.emitter.calc_emitted_particles(dt);
+        this.emit_particles(dt, need_emit);
+    }
+	
+	this.geometry.vertices.needsUpdate = true;
+	this.geometry.params.needsUpdate = true;
+	this.geometry.colors.needsUpdate = true;
+}
+
+
+
+
+Particle_System.prototype.update = function (dt)
+{
+	this.update_particle_geometry(dt);
 }
 
 
@@ -238,6 +325,9 @@ Particle_System.prototype.calc_defines = function ()
     if (this.params.no_fade_color) {
         defines["NO_FADE_COLOR"] = true;
     }
+    if (this.params.color_domain) {
+        defines["DYNAMIC_COLORS"] = true;
+    }
     return defines;
 }
 
@@ -246,7 +336,6 @@ Particle_System.prototype.select_texture = function (texture)
 {
 	if (typeof this.texture === 'string') {
 		this.texture = My_Lib.Texture_Manager.get(this.texture);
-        console.log(My_Lib.Texture_Manager.resources);
         if (!this.texture) {
             console.error("Oh, not found texture <" + this.params.texture + "> in create particle material! Instead get "+this.texture);
         }
@@ -312,76 +401,6 @@ Particle_System.prototype.set_blending = function (blending)
 
 
 
-Particle_System.prototype.emit_particles = function (dt, need_emit)
-{
-	//emit particles
-	var p;
-	var verts = this.geometry.vertices.array;
-	var params = this.geometry.params.array;
-	//var colors = this.geometry.colors.array;
-	//var dummy_color = new THREE.Color(1,1,1);
-	
-    this.node.updateMatrixWorld(true);
-    var matrix = this.node.matrixWorld;
-	for(var i =0; i < this.particle_data.length && need_emit > 0; i++) {
-		if (!(params[i] > 0)) {
-			p = this.particle_data[i];
-			this.emitter.emit(p, null, matrix);
-			p.lifetime = this.particle_lifetime;
-			verts[i*3] = p.position.x;
-			verts[i*3+1] = p.position.y;
-			verts[i*3+2] = p.position.z;
-			params[i] = p.lifetime;
-			need_emit--;
-			//colors[i*3] = this.params.color.r
-			//colors[i*3+1] = this.params.color.g;
-			//colors[i*3+2] = this.params.color.b;
-		}
-	}
-}
-
-Particle_System.prototype.update_particle_geometry = function (dt)
-{
-	var verts = this.geometry.vertices.array;
-	var params = this.geometry.params.array;
-	var p;
-	var vert = new THREE.Vector3(0,0,0);
-	var dummy_color = {"r":1, "b":1, "g":1};
-	for(var i = 0; i < this.particle_data.length; i++) {
-	
-		if (params[i] > 0) {
-			p = this.particle_data[i];
-			
-			//integrate
-			p.position.x += p.velocity.x * dt;
-			p.position.y += p.velocity.y * dt;
-			p.position.z += p.velocity.z * dt;
-			p.lifetime -= dt;
-			
-			if (p.lifetime <= 0 || !this.affector.affect(dt, p, vert, dummy_color)) {
-				p.lifetime = 0;
-			}
-			params[i] = p.lifetime;			
-			verts[i*3] = p.position.x;
-			verts[i*3+1] = p.position.y;
-			verts[i*3+2] = p.position.z;
-		}
-	}
-
-	var need_emit = this.emitter.calc_emitted_particles(dt);
-	this.emit_particles(dt, need_emit);
-	
-	this.geometry.vertices.needsUpdate = true;
-	this.geometry.params.needsUpdate = true;
-	this.geometry.colors.needsUpdate = true;
-}
-
-
-Particle_System.prototype.update = function (dt)
-{
-	this.update_particle_geometry(dt);
-}
-
 
 Particle_System.prototype.toJSON = function ()
 {
@@ -438,6 +457,5 @@ Particle_System.prototype.set_bounding_sphere_radius = function (radius)
 {
     this.node.boundingSphere.radius = radius;
 }
-
 
 export {Particle_System};

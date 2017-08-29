@@ -1,6 +1,8 @@
 function Mix_It()
 {
 
+
+
 	//FIX
 	THREE.Vector3.prototype.applyMatrix4_rotation = function ( m ) 
 	{
@@ -40,11 +42,14 @@ var Object3D_Animation_Mixin = {
     
     update:  function (dt)
     {
+        //console.log("object update", dt);
         if (this.animations !== undefined) {
             for(var i =0; i < this.animations.length; i++) {
                 var anim = this.animations[i];
                 anim.update(dt);
+                //console.log(this.rotation);
                 anim.apply(this);
+                //console.log(this.rotation);
             }
         }
     
@@ -257,7 +262,7 @@ var Object3D_Serialization_Mixin =
 
   _.copy_object(THREE.Object3D.prototype, Object3D_Serialization_Mixin);
   
-    
+THREE.Object3D.prototype.dm_mark = 'yes,this object has been marked by black magic, owned by me, dark matters'; 
 
 //replace source with this
 THREE.Object3D.prototype.replace_object_with_this = function ( source ) {

@@ -41,6 +41,7 @@ var vertex_shader = [
 	'else {',
 		//'vcolor.a = 0.0;',
 		'gl_PointSize = 0.0;',
+        'gl_Position.z = -1000.0;',
 	'}',
 '}'
 ];

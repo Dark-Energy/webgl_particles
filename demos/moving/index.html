@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+<title> Moving spheres!</title>
+   <link rel="stylesheet" type="text/css" href="css/main.css"  /> 
+</head>
+
+<body>
+
+<h2>Щёлкните на экране, чтобы создать мячик. Затем щёлкните по нему, чтобы ухватить мышью и перетащить в новое место на экране. Создавайте фигуры из шаров!
+</h2>
+<h2>Click on screen, what create sphere. Then click she again, down mouse button and drag she on the new spot on the scree. Create new shape from spheres!
+</h2>
+
+<button type="button" id="move">Moving camera to new position </button>
+<button type="button" id="turn">Turn camera</button>
+<div id="screen">
+</div>
+
+<div>
+<h3>Технические детали / Tech info</h3>
+<p>Надо понять, где именно мы двигаем шарик. Мы таскаем его не по экрану, а по плоскости, которая находится между ближней и дальней плоскостями отсечения и параллельна им. Нормалью служит вектор "вперёд" камеры, он же вектор взгляда. Конечно, обращённый. Скалярное произведение с позицией шара доставляет расстояние до начала координат, так мы получаем уравнение плоскости. Эта плоскость, в которой лежит шарик, назовём её drag_plane. Я добавил этот код в примесь, которая примешивается к прототипу PerpsectiveCamera. Затем достаточно испустить обычный луч из другой позиции мыши, как мы это делали раньше, и найти его точку соприкосновения с плоскостью drag_plane и перемещаем шарик в эту позицию. Пока всё просто. 
+</div>
+
+
+
+<script type="text/javascript" src="../../sidelibs/three.js"> </script>
+<script type="text/javascript" src="../../src/utils/utils.js"> </script>
+<script type="text/javascript" src="../../build/webpack.build.js"> </script>
+
+<script type="text/javascript" src="moving.js"> </script>
+
+
+
+</body>
+</html>

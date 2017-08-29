@@ -39,7 +39,7 @@ Chain_Loader.prototype = {
 		if (this.onerror) {
 			this.onerror(error);
 		} else {
-			console.error("Error!", error);		
+			console.error("Chain Loader Error!", error);
 		}
 		if (!this.stop_by_error) {
 			this.next();

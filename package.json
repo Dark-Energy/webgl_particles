@@ -18,6 +18,7 @@
   "scripts": {
     "devserver": "webpack-dev-server --watch --port 8000 --env.debug --config webpack.lib.js",
     "dev": "webpack --progress --watch --env.debug --config webpack.lib.js",
+    "deved": "webpack --progress --watch --env.debug --config webpack.editor.js",
     "build": "webpack --watch --config webpack.lib.js",
     "prod": "webpack --progress --hide-modules --config webpack.libprod.js",    
     "devgui": "webpack --watch --env.debug --config webpack.gui.js"

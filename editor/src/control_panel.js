@@ -184,6 +184,7 @@ Control_Panel.prototype.set_textures = function (textures)
 
 Control_Panel.prototype.create_particles = function ()
 {
+    console.log("testtttt", Engine.My_Lib.particle_manager);
     var ps = Engine.My_Lib.particle_manager.create_new();
     ps.node.position.set(5, 0, -5);
     //this.app.particles.push( ps.name );    

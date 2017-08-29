@@ -12,6 +12,11 @@ Particles_Points.prototype = Object.create( THREE.Points.prototype )
 
 Particles_Points.prototype.constructor = Particles_Points;
 
+Particles_Points.prototype.getBoundingSphere = function()
+{
+    return this.boundingSphere;
+}
+
 Particles_Points.prototype.toJSON = function (meta)
 {
     var mat = this.material;
@@ -24,6 +29,7 @@ Particles_Points.prototype.toJSON = function (meta)
     return object;
 }
 
+//WTF?
 Particles_Points.prototype.raycast = function (raycaster, intersects)
 {
     var sphere = new THREE.Sphere()

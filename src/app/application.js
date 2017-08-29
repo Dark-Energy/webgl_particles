@@ -60,7 +60,7 @@ Application.prototype._init_timer = function ()
 }
 
 
-var run_function = //window.requestAnimationFrame;
+var run_function = window.requestAnimationFrame ||
 	function(callback){
 		window.setTimeout(callback, 1000 / 60);
 	}
@@ -267,6 +267,7 @@ Application.prototype.loop = function ()
 		delta = 0.1;
 	}
 	this.delta_time = delta;
+    this.do_update(delta);
 	this.update(delta);
 	this.render(delta);
 	this.run();
@@ -291,6 +292,8 @@ Application.prototype.remove_animated_object = function (obj)
 	}
 }
 
+
+
 Application.prototype.update_all = function (delta)
 {
 	var obj;
@@ -302,10 +305,25 @@ Application.prototype.update_all = function (delta)
 	}
 }
 
-Application.prototype.update = function (delta)
+Application.prototype.pre_update = function (delta)
 {
 	this.update_all(delta);
     My_Lib.particle_manager.update(delta);
+    //event
+    if (this.before_update !== undefined) {
+        this.before_update(delta);
+    }
+}
+
+
+Application.prototype.do_update = function (dt)
+{
+    this.pre_update(dt);
+    this.update(dt);
+}
+
+Application.prototype.update = function (delta)
+{
 }
 
 

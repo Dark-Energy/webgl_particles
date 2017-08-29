@@ -87,24 +87,52 @@ Cone_Emitter.prototype.emit_color = function (color)
 	color.copy(this.color);
 }
 
-function Sphere_Emitter(radius)
+function Sphere_Emitter(radius, speed)
 {
 	Particle_Emitter.call(this);
-	this.radius = radius;
+	this.radius = radius || 1;
+    this.speed = speed || 1;
 	this.generator = new Point_Generators.Sphere(radius);
+    this.from_center = true;
+    Object.defineProperty(this, 'radius', {
+        configurable: true,
+        enumerable: true,
+        set: function (value) { radius = value; generator.radius = value;}
+    });
 }
 
 Sphere_Emitter.prototype = Object.create(Particle_Emitter.prototype);
-Sphere_Emitter.prototype.constructor = Sphere_Emitter;
 
+_.copy_object(Sphere_Emitter.prototype, {
+    constructor: Sphere_Emitter,
+    emit: function (p, color, matrix)
+    {
+        if (this.from_center) {
+            p.position.set(0,0,0);
+        } else {
+            this.generator.get_point(p.position);
+        }
+        this.generator.get_normal(p.velocity);
+        if (matrix) {
+            p.position.applyMatrix4(matrix);
+            p.velocity.applyMatrix4_rotation(matrix);
+        }
+        p.velocity.multiplyScalar(this.speed);
+    },
+    toJSON: function (json) {
+		var params = Particle_Emitter.prototype.toJSON.call(this, this);
+        params.radius = this.radius;
+        params.speed = this.speed;
+        //params.generator.radius = this.radius;
+    },
+    parse: function (json) {
+		Particle_Emitter.prototype.parse.call(this, json);
+        this.radius = json.radius;
+        this.speed = json.speed;
+    }
+});
 
-Sphere_Emitter.prototype.emit = function (p)
-{
-	this.generator.get_point(p.position);
-	this.generator.get_normal(p.velocity);
-	p.velocity.multiplyScalar(10);
-}
-
+My_Lib.Register_Class("Sphere_Emitter", Sphere_Emitter);
 
 
 function Star_Dust_Emitter ()

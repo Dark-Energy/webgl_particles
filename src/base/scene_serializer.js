@@ -42,7 +42,7 @@ Scene_Serializer.prototype.bind_animations = function (animdata)
     
     var bindings = animdata.bindings;
     
-    
+    //console.log("bind animation");
     var self = this;
     function copy_animations(obj, bind)
     {
@@ -57,6 +57,7 @@ Scene_Serializer.prototype.bind_animations = function (animdata)
         var uuid = bind.uuid;
         var obj = this.root.getObjectByProperty("uuid", uuid);
         if (obj) {
+            //console.log("binding " + uuid + " object to animation "+uuid);
             copy_animations(obj, bind);
         }
     }
