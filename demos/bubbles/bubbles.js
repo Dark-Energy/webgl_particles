@@ -27,27 +27,33 @@
     }
     
     
+    function test_canvas_size(canvas)
+    {
+        var rect = canvas.getBoundingClientRect(), // abs. size of element
+        scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for X
+        scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for Y
+        console.log("scale", scaleX, scaleY);
+    }
+
     
     my_app.add_event_listener = function ()
     {
         var self = this;
-        this.dom_screen.addEventListener("mouseup", function (event) {
+        
+        function mouseup(event)
+        {
             event.preventDefault();
             var dir = self.get_dir(event);        
             var intersects = self.find_intersected_object(dir);
             if (intersects.length > 0) {
+                //console.log(intersects[0]);
                 self.remove_target(intersects[0]);
             } else {
-                if (this.canvas === undefined) {
-                    console.log("WTF???");
-                var rect = this.canvas.getBoundingClientRect();
-                var x = event.clientX, y = event.clientY;
-                console.log(x < rect.left||  x > rect.rect || y < rect.top || y > rect.bottom);
-                console.log(x, y);
-                    
-                }
+                test_canvas_size();
             }
-        }, false);
+        }
+        
+        this.dom_screen.addEventListener("mouseup", mouseup, false);
     }
     
 
@@ -96,10 +102,10 @@
         }
    
         sphere.my.is_life = true;
+        sphere.visible = true;        
         sphere.my.velocity = new THREE.Vector3(0, -1, 0);
         sphere.position.copy(calc_random_position());
         sphere.animations[0].reset();
-        //sphere.visible = true;
         this.main_scene.add(sphere);
         this.active_particles.push(sphere);
    }
@@ -109,14 +115,13 @@
    {
         sphere.my.is_life = false;
         sphere.parent.remove(sphere);
-        //sphere.visible = false;        
         var index = this.active_particles.indexOf(sphere);
         if (index > -1) {
             this.active_particles.splice(index, 1);
         }
         this.explosion.node.position.copy(sphere.position);
         this.explosion.discrete_emit(30);
-        
+        sphere.visible = false; 
    }
    
    my_app.emit_spheres = function (dt)
@@ -163,7 +168,8 @@
             blending: "no",
             particle_lifetime: 0.5,
             depth_test: false,
-            color_domain: new Engine.Table_Color()
+            color_domain: new Engine.Table_Color(),
+            non_collideble: true,
         };
         params.emitter = new Engine.Sphere_Emitter(10,5);
         params.emitter.from_center = true;

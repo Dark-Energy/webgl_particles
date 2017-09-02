@@ -4,6 +4,7 @@ export {My_Lib} from './base/my_lib.js';
 
 export {Base_Animation, Euler_Animation, Scale_Animation} from './base/animations.js';
 export {Mouse_Intersector} from './base/mouse_intersector.js';
+export {Mouse_Camera_Controller} from './base/mouse_camera_controller.js';
 export {Loading_Manager} from './base/loading_manager.js';
 export {Package_Manager} from './base/package_manager.js';
 
@@ -39,5 +40,5 @@ export {Application} from './app/application.js';
 
 export {Color_Domain, Table_Color} from './particles/color_domain.js';
 
-export {Mouse_Camera_Controller} from './base/mouse_camera_controller.js';
+
 export {Simple_Collider} from './base/simple_collider.js';

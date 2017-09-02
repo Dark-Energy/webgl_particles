@@ -1,12 +1,10 @@
 var path = require('path');
 
 module.exports = {
-  entry: './src/engine_main_webpack.js',
+  entry: './src/editor_webpack_dev.js',
   devtool: 'inline-source-map',
   output: {
-    filename: 'webpack.build.js',
-	library: 'Engine',
-	libraryTarget: 'var',
+    filename: 'editor.gui.dev.js',
     path: path.resolve(__dirname, 'build')
   },
   watch: true,

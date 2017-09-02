@@ -70,9 +70,9 @@ Simple_Collider.prototype.check_object_bounding_sphere = function(obj)
 
 Simple_Collider.prototype.find_intersection_with_bounding_sphere = function(object, top ) {
 
-    if ( object.visible === false && !this.params.check_invisible) return;
-
-    this.check_object_bounding_sphere(object);
+    if ( !object.non_collideble && (object.visible || this.params.check_invisible)) {
+        this.check_object_bounding_sphere(object);
+    }
     if ( !this.params.recursive) return;
     
     

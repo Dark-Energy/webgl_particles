@@ -22,6 +22,9 @@
 
     my_app.get_ray = function (event)
     {
+        console.log(Engine);
+        console.log(Engine.Mouse_Camera_Controller);
+    
         var mc = new Engine.Mouse_Camera_Controller(this.canvas, this.main_camera);
         var ray = mc.get_ray_from_camera_in_mouse_position(event);
         return ray;

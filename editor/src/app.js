@@ -16,6 +16,7 @@
             var self = this;
             function drag(event)
             {
+                event.preventDefault();
                 if (self.drag_object === undefined) {
                     self.drag_object = object;
                     if (object === undefined) {
@@ -29,7 +30,7 @@
             this.old_pos.copy(object.position);
             this.dragging = true;
             this.drag_object = object;
-            this.canvas.addEventListener("mousemove", drag);
+            this.canvas.addEventListener("mousemove", drag, false);
        },
        test_plane : function (obj, event)
         {
@@ -64,6 +65,7 @@
             var self = this;
             function mouseup(event)
             {
+                event.preventDefault();
                 if (self.dragging) {
                     self.end_drag();
                     return;
@@ -73,6 +75,7 @@
 
             function mousedown(event)
             {
+                event.preventDefault();
                 var ray = self.get_ray(event);
                 if (!self.dragging) {
                     console.log("dragging is false, check intersection");

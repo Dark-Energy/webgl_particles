@@ -19,9 +19,13 @@
     "devserver": "webpack-dev-server --watch --port 8000 --env.debug --config webpack.lib.js",
     "dev": "webpack --progress --watch --env.debug --config webpack.lib.js",
     "deved": "webpack --progress --watch --env.debug --config webpack.editor.js",
-    "build": "webpack --watch --config webpack.lib.js",
-    "prod": "webpack --progress --hide-modules --config webpack.libprod.js",    
-    "devgui": "webpack --watch --env.debug --config webpack.gui.js"
+    "build": "webpack --watch --config webpack.libprod.js",
+    "editordev":   "webpack --progress --watch --env.debug --config webpack.editor.dev.js",
+    "editor": "webpack --progress --hide-modules --config webpack.editor.prod.js",    
+    "enginedev": "webpack --watch --progress --config webpack.engine.dev.js",
+    "engineprod": "webpack --progress --hide-modules --config webpack.engine.prod.js",    
+    "guidev": "webpack --watch --env.debug --progress --config webpack.gui.dev.js",
+    "guiprod": "webpack --env.debug --config webpack.gui.prod.js"
   },
   "repository": {
     "type": "git",

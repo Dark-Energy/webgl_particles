@@ -13,6 +13,8 @@
 //yes, this class store reference to camera
 
 //probably, it may be mixin to camera
+
+
 function Mouse_Camera_Controller(canvas, camera)
 {
     if (canvas === undefined) {
@@ -97,4 +99,4 @@ _.copy_object(Mouse_Camera_Controller.prototype,{
 });
 
 
-export {Mouse_Camera_Controller};
+export { Mouse_Camera_Controller };

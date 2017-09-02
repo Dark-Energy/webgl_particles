@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+<title> Technical detals</title>
+</head>
+
+<body>
+
+<p><a href="demos/moving/index.html">Just testing how 3d objects may drag on scree.</a>
+<p>This is just series examples for learning how work project screen position to 3d world. 
+<p>Point on screen contain in unsigned world. Origin screen coordinat is left top corner. Screen center have coordinates, say, (400, 300). Axis Y rise in the down direction. Yes, shis inverted. 
+<p>At first, we transform coordinates to signed, translate origin in the center of the screen. Then, we normalized coordinates, thath so all coordinates lay in interval (-1,1). Also we need watch, canvas sizes was actual.
+<pre>
+	var offset = canvas.getBoundingClientRect();
+	var width = canvas.clientWidth;
+	var height = canvas.clientHeight;
+    var x = (x - offset.left) / width;
+    var y = (y - offset.top) / height;
+    
+</pre>
+<p>This do cooridnates normalized and watch for correctnecy of canvas bounding. Then we do coordinates signed and inverted Y axis
+<pre>
+	var x = x * 2 - 1;
+	var y = -(y * 2 - 1);
+	var vector = new THREE.Vector3( x, y, 1 );
+</pre>
+<p>Further, we need project this coordinates to 3d world. For this, we need multiply vector to invertex projected matrix. Then we get coordinates in coordinates, when camera is origin, shes view vector ("forward" direction) lay along Z axis. Points are projects on z near plane. They are may projected on any plane between z near and z far planes, and even beyoun this. But all this plane have normal camera eye vector. 
+<p>Eventually, we need transform point from camera sysmtem coordinates to world coordinates. We do this by means invertex View Matrix. In THREE View Matrix don't exists. Instead, they used invertex World Matrix. So, strange design.
+<p>THREE.unproject multiply invertex projected matrix and invertex view matrix, multiply vector on this, and do perspective multiply. In result, point projected on far z plane. In my view, mere wrong, what method with name "unproject" also do multiply to inverted View Matrix.
+<p>At end, we are getting point on z far plane, what we projected from screen. We subsctract it from camera position and normalize. In result, we get line direction. If this direction attach to any poin, we get line equation. Enough multiply direction to any scalar (any number) and adding to point, what get any point along line.
+<p>This is ray. It contain origin, any point in 3d world  and normalized direction. We can testing it against collide with some objects.
+
+
+
+</body></html>

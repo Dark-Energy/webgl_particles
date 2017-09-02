@@ -57,6 +57,7 @@
     {
         var self = this;
         this.dom_screen.addEventListener("mouseup", function (event) {
+            event.preventDefault();
             var dir = self.get_dir(event);        
             if (event.button === 0) {
                 self.create_target(dir);
@@ -66,7 +67,7 @@
                     self.remove_target(intersects[0]);
                 }            
             }
-        });
+        }, false);
     }
     
 

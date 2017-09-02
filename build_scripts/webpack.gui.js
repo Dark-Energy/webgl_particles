@@ -1,11 +1,11 @@
 var path = require('path');
 
 module.exports = {
-  entry: './src/editor_webpack_dev.js',
+  entry: './src/gui_main_webpack.js',
   devtool: 'inline-source-map',
   output: {
-    filename: 'webpack.build.js',
-	library: 'Engine',
+    filename: 'dev.gui.js',
+	library: 'Editor_Gui',
 	libraryTarget: 'var',
     path: path.resolve(__dirname, 'build')
   },
@@ -41,26 +41,5 @@ module.exports = {
 
 };
 
-var webpack = require('webpack')
 
-if (process.env.NODE_ENV === 'production') {
-  module.exports.devtool = '#source-map'
-  // http://vue-loader.vuejs.org/en/workflow/production.html
-  module.output.filename = 'prod.build.js',
-  module.exports.plugins = (module.exports.plugins || []).concat([
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
-      }
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: {
-        warnings: false
-      }
-    }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true
-    })
-  ])
-} 
+

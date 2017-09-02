@@ -4,7 +4,7 @@ module.exports = {
   entry: './src/gui_main_webpack.js',
   devtool: 'inline-source-map',
   output: {
-    filename: 'webpack.gui.js',
+    filename: 'editor.gui.dev.js',
 	library: 'Editor_Gui',
 	libraryTarget: 'var',
     path: path.resolve(__dirname, 'build')

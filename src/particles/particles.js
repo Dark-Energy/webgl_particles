@@ -26,7 +26,8 @@ function Particle_System(data)
 	this.node = new Particles_Points(this.create_particle_geometry(count), this.material);
     this.node.name = this.name;
     this.node.boundingSphere.radius = this.params.bounding_radius;
-
+    this.node.non_collideble = this.params.non_collideble;
+    
 }
 
 
@@ -49,6 +50,7 @@ Particle_System.prototype.config_params = function (data)
     params.bounding_radius = 2.0;
     params.discrete_emission = false;
     params.apply_world_matrix_on_emit = true;
+    params.non_collideble = false;
     
     for(var key in data) {
         if (Object.prototype.hasOwnProperty.call(data, key)){
@@ -81,10 +83,16 @@ Particle_System.prototype.create_particle_data = function (count)
 {
     var particle_data = new Array(count);
     var p;
+    //var matrix = this.node.worldMatrix();
     for(var i =0;i < count; i++) {
 		p = {};
 		p.position = new THREE.Vector3(0,0,0);
 		p.velocity = new THREE.Vector3(0,0,0);
+        
+        //p.position.copy(this.node.position);
+        //p.position.applyMatrix4(matrix);
+        //p.velocity.applyMatrix4_rotation(matrix);
+        
 		p.lifetime = 0;        
 		particle_data[i] = p;
     }
@@ -99,11 +107,13 @@ Particle_System.prototype.create_particle_geometry = function(count)
 	var colors = new Float32Array(count * 3);
 	var params = new Float32Array(count);
 	
+    var particle;
     for (var i = 0; i < count; i++) {
+        particle = this.particle_data[i];
 		//create particle
-		vertices[i*3] = 0;
-		vertices[i*3+1] = 0;
-		vertices[i*3+2] = 0;
+		vertices[i*3] = particle.position.x;
+		vertices[i*3+1] = particle.position.y;
+		vertices[i*3+2] = particle.position.z;
 
 		params[i] = 0.0;
         
